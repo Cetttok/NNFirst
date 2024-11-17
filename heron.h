@@ -18,6 +18,7 @@ public:
 //    float mNext, mRealy; // this may delete
 //    float l; /// summ for enters l
 //    float o;///  heron output
+    float mLayerError = 0;
 
     QString toQString();
     Link getLinkForHeron(int layer, int heron);
@@ -38,7 +39,7 @@ public:
     Heron* mSender;
     Heron* mRecever;
     float mWeight = 1;
-    float mError = 0; //q (s-r)
+    float mLastDWeight = 0;
     QString toQString(){
         return QString("Link for Heron {"+QString::number(mSender->mIdLayer)
                        +QString::number(mSender->mId)+"} to {"
