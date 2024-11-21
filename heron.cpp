@@ -21,10 +21,10 @@ bool Heron::operator !=(const Heron &heron) const
     }
     return true;
 }
-QString getQStringFromQList(QList <float> list){
+QString getQStringFromQList(QList <double> list){
     QString string = QString("(");
-    for (float el: list){
-        string.append(QString::number(el));
+    for (double el: list){
+        string.append(QString::number(el)+",");
     }
     string.append(")");
     return string;
@@ -35,13 +35,13 @@ QString Heron::toQString()
     string+=(QString("Heron("));
     string+=(QString::number(mIdLayer)+QString(","));
     string+=(QString::number(mId)+QString("){"));
-    string+=(QString("Links{\n"));
+    string+=(QString("Links{"));
     for (Link &link : mLinks){
-        string+= (link.toQString()+QString(";\n"));
+        string+= (link.toQString()+QString(";"));
     }
-    string+=(QString("}\n"));
+    string+=(QString("}"));
     string+=(QString("Inputs - ") + getQStringFromQList(mInputs));
-    string+=(QString("Output - ")+QString::number(mOutput))+QString("\n}");
+    string+=(QString("Output - ")+QString::number(mOutput))+QString("}");
     return string;
 }
 
@@ -55,12 +55,12 @@ Link Heron::getLinkForHeron(int layer, int heron)
     }
 }
 
-void Heron::addLink(Heron* heron, float weight)
+void Heron::addLink(Heron* heron, double weight)
 {
     mLinks.append(Link(this,heron,weight));
 }
 
-Link::Link(Heron *sender, Heron *recever, float weight):
+Link::Link(Heron *sender, Heron *recever, double weight):
     mSender(sender),mRecever(recever),mWeight(weight)
 {
 //constructor

@@ -8,16 +8,16 @@ class HeronField
 public:
     HeronField(QList<int> heronsOnLayersAmount);
     QList<QList<Heron*>> mHerons;
-    float calculateOutput(QList<float> inputs);
-    float func(float input);
-    float derFunc(float input);
-    //void makeLearningStep(float correctOutput);
-    float multySum(QList<float> A, QList<float> B);
-    void makeLearningStep(float correctOutput, float learningSpeed, float learningMoment);
+    double calculateOutput(QList<double> inputs);
+    double func(double input);
+    double derFunc(double input);
+    //void makeLearningStep(double correctOutput);
+    double multySum(QList<double> A, QList<double> B);
+    void makeLearningStep(double correctOutput, double learningSpeed, double learningMoment);
 
     void clearInputsAndOutputs();
 protected:
-    float weightedSum(QList<float> inputs);
+    double weightedSum(QList<double> inputs);
 
 };
 
