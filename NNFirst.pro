@@ -19,13 +19,17 @@ SOURCES += \
     heron.cpp \
     heronfield.cpp \
     imagedecorder.cpp \
-    numberrecognizer.cpp
+    numberrecognizer.cpp \
+    convolutionalheronfield.cpp \
+    chflayer.cpp
 
 HEADERS += \
     heron.h \
     heronfield.h \
     imagedecorder.h \
-    numberrecognizer.h
+    numberrecognizer.h \
+    convolutionalheronfield.h \
+    chflayer.h
 
 DISTFILES += \
     data/nums/Arial_0.bmp \

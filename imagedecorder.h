@@ -7,9 +7,9 @@ class ImageDecorder
 public:
 
     ImageDecorder();
-    QList<double> decode(QImage image);
     int getNumForColor(QRgb color);
     QList<QRgb> activeColors = QList<QRgb>();
+    QList<double> decode(QImage image);
 };
 
 #endif // IMAGEDECORDER_H

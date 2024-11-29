@@ -9,6 +9,11 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 //    qDebug() << "The start of programm";
+//    qDebug() << QRandomGenerator::global()->bounded(2.0)-1;
+//    qDebug() <<  QRandomGenerator::global()->bounded(2.0)-1;
+//    qDebug() << QRandomGenerator::global()->bounded(2.0)-1;
+//    qDebug() << QRandomGenerator::global()->bounded(2.0)-1;
+//    qDebug()  << QRandomGenerator::global()->bounded(2.0)-1;
 //    QList <QList<double>> selection = QList <QList<double>>();
 
 //    selection.append(QList<double>{1,1,1});
@@ -59,8 +64,8 @@ int main(int argc, char *argv[])
 //    }
 
 //    qDebug() << "The end of programm";
-    QImage image = QImage("data\\nums\\40\\Times_5.bmp");
-    QImage anotherImage = QImage("data\\nums\\40\\Times_2.bmp");
+    QImage image = QImage("data\\nums\\test\\Test_3.bmp");
+    QImage anotherImage = QImage("data\\nums\\test\\Test_7.bmp");
     QImage tryItImage = QImage("data\\nums\\40\\Times_1.bmp");
     QImage anotherTryItImage = QImage("data\\nums\\40\\Times_7.bmp");
 
@@ -72,28 +77,52 @@ int main(int argc, char *argv[])
 
 
     NumberRecognizer heroLink = NumberRecognizer(QString("data\\nums\\40"),5,8);
+    qDebug() << "Main: _herons created";
     for (auto &limage: images) {
-        qDebug() << "Main: Testing BASE" << heroLink.recognize(limage) << "correct - "<<images.indexOf(limage);
+        qDebug() << "Main: Testing Start" << heroLink.recognize(limage) << "correct - "<<images.indexOf(limage);
+        if (heroLink.recognize(limage)  == 0){
+            qDebug() << heroLink.getHerons()->mHerons.last().last()->toQString();
+        }
     }
-    for (int i = 0; i< 50000; i++){
-        qDebug () << i+1 << "learning iteration";
-        heroLink.learningPass(0.03,0.01);
+    for (int i = 0; i< 1000; i++){
+        qDebug () <<"Main:" <<i+1 << "learning iteration";
+        heroLink.learningPass(0.001,0.0003);
 
-        qDebug() << "Main: Testing " << heroLink.recognize(image) << "correct - 5";
-        qDebug() << "Main: Testing " << heroLink.recognize(anotherImage) << "correct - 2";
-        qDebug() << "Main: Testing " << heroLink.recognize(tryItImage) << "correct - 1";
-        qDebug() << "Main: Testing " << heroLink.recognize(anotherTryItImage) << "correct - 7";
-        qDebug() << "Main: Testing " << heroLink.recognize(anotherTryItImageDouble) << "correct - 9";
+        //qDebug() << "Main: Testing " << heroLink.recognize(image) << "correct - 5";
+        //qDebug() << "Main: Testing " << heroLink.recognize(anotherImage) << "correct - 7";
+        qDebug() << "Main: Testing " << (heroLink.recognize(image)) << "correct - 0.6";
+
+        //qDebug() << "Main: Testing " << heroLink.recognize(tryItImage) << "correct - 1";
+        //qDebug() << "Main: Testing " << heroLink.recognize(anotherTryItImage) << "correct - 7";
+        //qDebug() << "Main: Testing " << heroLink.recognize(anotherTryItImageDouble << "correct - 9";
         if (heroLink.recognize(image)==0){
-            qDebug () << heroLink.getHerons()->mHerons.last().last()->toQString();
+            //qDebug () << heroLink.getHerons()->mHerons.last().last()->toQString();
             break;
         }
 
     }
+    QList<double> errors = QList<double>();
 
     for (auto &limage: images) {
-        qDebug() << "Main: Testing FINAL" << heroLink.recognize(limage) << "correct - "<<images.indexOf(limage);
+        double result = heroLink.recognize(limage);
+        double error = fabs(((double)images.indexOf(limage)/10.0)-result);
+        qDebug() << "Main: Testing FINAL" << result << "correct - "<<(double)images.indexOf(limage)/10.0 << error;
+        errors.append(error);
     }
+    double gError = 0;
+    for (auto &error :errors){
+        gError += error;
+    }
+    qDebug() << "Main: gError ="<<gError/errors.size();
+    qDebug() << "3 - " << heroLink.recognize(image);
+    qDebug() << "7 - " << heroLink.recognize(anotherImage);
+//    HeronField herons  = HeronField(QList<int>({1,1,1}));
+//    for (int i = 0; i< 1000; i++) {
+//        qDebug() << herons.calculateOutput(QList<double>({0.5}));
+//        herons.makeLearningStep(QList<double>({0.9}),0.03,0.01);
+
+//    }
+//    qDebug() << herons.calculateOutput(QList<double>({0.5})) << "corr 0.9";
     return a.exec();
 }
 

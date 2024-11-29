@@ -1,17 +1,19 @@
 #include "heronfield.h"
 #include <qDebug>
 #include <QRandomGenerator>
+#include <QtMath>
 double e = 2.7182818284;
 
-HeronField::HeronField(QList<int> heronsOnLayersAmount)
+HeronField::HeronField(QList<int> heronsOnLayersAmount, double startWeightMultiple)
 {
-     mHerons = QList<QList<Heron*>>();
+    QRandomGenerator::system();
+    mHerons = QList<QList<Heron*>>();
     //create herons
     //qDebug() <<heronsOnLayersAmount;
     for (int layer = 0;layer<heronsOnLayersAmount.size(); layer++){ // on every layer
         mHerons.append(QList<Heron*>());
         for (int heron = 0; heron< heronsOnLayersAmount[layer];heron++){ //on every heron on layer
-            mHerons[layer].append(new Heron(layer,heron));
+            mHerons[layer].append(new Heron(layer,heron,startWeightMultiple*(QRandomGenerator::global()->bounded(2.0)-1.0)));
         }
     }
     //qDebug() << "herons created for scheme = "<< heronsOnLayersAmount;
@@ -22,7 +24,8 @@ HeronField::HeronField(QList<int> heronsOnLayersAmount)
         for (Heron *heron : mHerons[layer]){ //on every heron on layer
             if(layer+1 <mHerons.size()){
                 for(Heron *linkedHeron : mHerons[layer+1]){ // every heron to every heron
-                    double weight = QRandomGenerator::system()->generateDouble()/100;
+                    double weight = startWeightMultiple*(QRandomGenerator::global()->bounded(2.0)-1.0);
+                    //qDebug() << "weight"<<weight;
                     if (weight != 0){
                     heron->addLink(linkedHeron, weight);//dont forget to add random weight!!
                     //(QRandomGenerator::system()->generateDouble()
@@ -36,20 +39,22 @@ HeronField::HeronField(QList<int> heronsOnLayersAmount)
         }
     }
     //qDebug() << "herons been linked";
-    for (int layer = 0;layer<mHerons.size(); layer++){ // on every layer
-        for (Heron *heron : mHerons[layer]){ //on every heron on layer
-            //qDebug() << heron->toQString();
+//    for (int layer = 0;layer<mHerons.size(); layer++){ // on every layer
+//        for (Heron *heron : mHerons[layer]){ //on every heron on layer
+//            //qDebug() << heron->toQString();
 
-        }
-    }
+//        }
+//    }
 
 
 }
-void HeronField::makeLearningStep(double correctOutput, double learningSpeed,double learningMoment){
+void HeronField::makeLearningStep(QList<double> correctOutput, double learningSpeed,double learningMoment){
     //calculate errors for heron
 
-    mHerons.last().last()->mLayerError = derFunc(weightedSum(mHerons.last().last()->mInputs))
-            *(correctOutput-mHerons.last().last()->mOutput);
+    for(int i = 0; i < mHerons.last().size();i++){
+        mHerons.last()[i]->mLayerError = derFunc(weightedSum(mHerons.last()[i]->mInputs))
+            *(correctOutput[i] - mHerons.last()[i]->mOutput);
+    }
     //errors.append(correctOutput-mHerons.last().last()->mOutput);
     //qDebug () << mHerons.first().last()->toQString();
 
@@ -69,18 +74,32 @@ void HeronField::makeLearningStep(double correctOutput, double learningSpeed,dou
         }
     }
 
-    for (QList<Heron*> &layer : mHerons){
-        for(Heron *heron : layer){
-            for(Link &link : heron->mLinks){
-                double dWeight = learningSpeed*heron->mOutput*heron->mLayerError+learningMoment*link.mLastDWeight;
-                //qDebug() << dWeight;
-                //qDebug() << dWeight <<" = " <<heron->mOutput<< heron->mLayerError;
-                link.mWeight += dWeight;
-                link.mLastDWeight = dWeight;
-            }
-        }
-    }
+//    for (QList<Heron*> &layer : mHerons){
+//        for(Heron *heron : layer){
+//            for(Link &link : heron->mLinks){
+//                double dWeight = learningSpeed*heron->mOutput*heron->mLayerError+learningMoment*link.mLastDWeight;
+//                //qDebug() << dWeight;
+//                //qDebug() << dWeight <<" = " <<heron->mOutput<< heron->mLayerError;
+//                link.mWeight += dWeight;
+//                link.mLastDWeight = dWeight;
+//            }
+//        }
+//    }
 
+        for (QList<Heron*> &layer : mHerons){
+            for(Heron *heron : layer){
+                for(Link &link : heron->mLinks){
+                    double dWeight = learningSpeed*link.mSender->mOutput*link.mRecever->mLayerError+learningMoment*link.mLastDWeight;
+
+                    //qDebug() << dWeight;
+                    //qDebug() << dWeight <<" = " <<heron->mOutput<< heron->mLayerError;
+                    link.mWeight += dWeight;
+                    link.mLastDWeight = dWeight;
+                }
+                heron->mBias = learningSpeed*heron->mLayerError;
+            }
+
+        }
 
 }
 void HeronField::clearInputsAndOutputs(){
@@ -103,7 +122,7 @@ double HeronField::multySum(QList<double> A, QList<double> B){
     }
     return output;
 }
-double HeronField::calculateOutput(QList<double> inputs)
+QList<double> HeronField::calculateOutput(QList<double> inputs)
 {
     clearInputsAndOutputs();
 
@@ -115,21 +134,26 @@ double HeronField::calculateOutput(QList<double> inputs)
     for (int layer = 0; layer<mHerons.size(); layer++){
         for (int heron =0; heron < mHerons[layer].size(); heron++){
              //qDebug() << "new Heron - " <<mHerons[layer][heron]->toQString();
+             mHerons[layer][heron]->mInputs.append(mHerons[layer][heron]->mBias);
              mHerons[layer][heron]->mOutput = func(weightedSum(mHerons[layer][heron]->mInputs));
-
+             //qDebug() << "HeronField::calculateOutput Heron" << layer<<"input: "<< mHerons[layer][heron]->mInputs <<"before func: " <<weightedSum(mHerons[layer][heron]->mInputs) << "output : " << func(weightedSum(mHerons[layer][heron]->mInputs));
              for (Link link : mHerons[layer][heron]->mLinks){
                 link.mRecever->mInputs.append(mHerons[layer][heron]->mOutput*link.mWeight);
                 //qDebug() <<"mOutput * link.Weifghr = "<<mHerons[layer][heron]->mOutput << "*"
 
-                        //<<link.mWeight << "=" << mHerons[layer][heron]->mOutput*link.mWeight;
+               //qDebug() <<mHerons[layer][heron]->toQString();      //<<link.mWeight << "=" << mHerons[layer][heron]->mOutput*link.mWeight;
             }
+
             //qDebug() << mHerons[layer][heron]-> mInputs;
         }
         //qDebug() << "new layer - "<< layer;
     }
     //qDebug() << "Herons field has been calculated last var";
-
-    return func(weightedSum(mHerons.last().last()->mInputs));
+    QList<double> result = QList<double>();
+    for (Heron* heron : mHerons.last()){
+        result.append(func(weightedSum(heron->mInputs)));
+    }
+    return result;
 
 }
 
@@ -144,16 +168,18 @@ double HeronField::func(double input)
 //    }
 //return input;
     return input;
+
     //sigmoid
 //    return sin(input);
-//    double result = 1/(1+ pow(e,(0-input)));
-//    if (result!=result){
-//        qDebug() << "invalid "<<pow(e,(0-input));
-//    }
+    //double result = 1/(1+ qPow(e,(-input)));
+    //if (result!=result){
+      //  qDebug() << "invalid "<<result;
+    //}
+    //qDebug() << input;
 //    //return result;
 //    if (input > 0){
-
-    //      return input;}
+//          return input;
+//    }
 
 //     return 0;
 }
@@ -163,24 +189,25 @@ double HeronField::derFunc(double input){
 //    if (input > 1){
 //        return 0;
 //    }
-//    return 1;
+    return 1;
 
 //    //sigmoid
-//    if (input < 0){
-//      return 0;}
+//    if (input > 0){
+//      return 1;}
 
-//..     return 1;
-//    //return cos(input);
-//    double result = func(input)*(1-func(input));
-//    if (result!=result){
-//        qDebug() <<"invalid for derFunc"<< func(input);
-//    }
-//    return result;
-    return 1;
+//     return 0;
+////    //return cos(input);
+    double result = func(input)*(1.0-func(input));
+    if (result!=result){
+        qDebug() <<"invalid for derFunc"<< func(input);
+    }
+    //qDebug() << result <<func(input)<<input;
+    return result;
+    //return 1;
 }
 double HeronField::weightedSum(QList<double> inputs){
     double result =0;
-    for (double input : inputs){
+    for (double &input : inputs){
         result += input;
     }
     //qDebug() << "weightedSum()" << result << inputs;

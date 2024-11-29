@@ -1,7 +1,7 @@
 #include "heron.h"
 #include <qDebug>
 
-Heron::Heron(int idLayer, int id):mId(id),mIdLayer(idLayer)
+Heron::Heron(int idLayer, int id, double bias):mId(id),mIdLayer(idLayer),mBias(bias)
 {
     //constructor
 }
@@ -36,9 +36,9 @@ QString Heron::toQString()
     string+=(QString::number(mIdLayer)+QString(","));
     string+=(QString::number(mId)+QString("){"));
     string+=(QString("Links{"));
-    for (Link &link : mLinks){
-        string+= (link.toQString()+QString(";"));
-    }
+//    for (Link &link : mLinks){
+//        string+= (link.toQString()+QString(";"));
+//    }
     string+=(QString("}"));
     string+=(QString("Inputs - ") + getQStringFromQList(mInputs));
     string+=(QString("Output - ")+QString::number(mOutput))+QString("}");

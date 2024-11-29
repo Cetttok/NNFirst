@@ -7,7 +7,7 @@ class Link;
 class Heron
 {
 public:
-    Heron(int idLayer,int id);
+    Heron(int idLayer,int id, double bias);
 //    int id;
 
     bool operator == (const Heron& heron) const;
@@ -27,6 +27,7 @@ public:
     int mId;
     QList<double> mInputs;
     double mOutput = 0;
+    double mBias = 1;
 
 // i coment strings there we dont use now!
 //    double lastDWeight; // delta between weights
