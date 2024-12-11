@@ -5,6 +5,9 @@
 #include <QDateTime>
 #include "numberrecognizer.h"
 #include <QRandomGenerator>
+#include "convlayer.h"
+#include "maxpoolinglayer.h"
+#include "chnetwork.h"
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
@@ -64,58 +67,76 @@ int main(int argc, char *argv[])
 //    }
 
 //    qDebug() << "The end of programm";
-    QImage image = QImage("data\\nums\\test\\Test_3.bmp");
-    QImage anotherImage = QImage("data\\nums\\test\\Test_7.bmp");
-    QImage tryItImage = QImage("data\\nums\\40\\Times_1.bmp");
-    QImage anotherTryItImage = QImage("data\\nums\\40\\Times_7.bmp");
+//    QImage image = QImage("data\\nums\\test\\Test_3.bmp");
+//    QImage anotherImage = QImage("data\\nums\\256\\Times_9.bmp");
+//    QImage tryItImage = QImage("data\\nums\\40\\Times_1.bmp");
+//    QImage anotherTryItImage = QImage("data\\nums\\40\\Times_7.bmp");
 
-    QImage anotherTryItImageDouble = QImage("data\\nums\\40\\Times_9.bmp");
-    QList<QImage> images;
-    for (int i = 0; i< 10; i++) {
-        images.append(QImage("data\\nums\\40\\Times_"+QString::number(i)+".bmp"));
-    }
+//    QImage anotherTryItImageDouble = QImage("data\\nums\\40\\Times_9.bmp");
+//    QList<QImage> images;
+//    for (int i = 0; i< 10; i++) {
+//        images.append(QImage("data\\nums\\256\\Times_"+QString::number(i)+".bmp"));
+//    }
 
 
-    NumberRecognizer heroLink = NumberRecognizer(QString("data\\nums\\40"),5,8);
-    qDebug() << "Main: _herons created";
-    for (auto &limage: images) {
-        qDebug() << "Main: Testing Start" << heroLink.recognize(limage) << "correct - "<<images.indexOf(limage);
-        if (heroLink.recognize(limage)  == 0){
-            qDebug() << heroLink.getHerons()->mHerons.last().last()->toQString();
-        }
-    }
-    for (int i = 0; i< 1000; i++){
-        qDebug () <<"Main:" <<i+1 << "learning iteration";
-        heroLink.learningPass(0.001,0.0003);
+//    NumberRecognizer heroLink = NumberRecognizer(QString("data\\nums\\256"),16,16);
+//    qDebug() << "Main: _herons created";
+//    for (auto &limage: images) {
+//        qDebug() << "Main: Testing Start" << heroLink.recognize(limage) << "correct - "<<images.indexOf(limage);
+////        i f (heroLink.recognize(limage)  == 0){
+////            qDebug() << heroLink.getHerons()->mHerons.last().last()->toQString();
+////        }
+//    }
+//    for (int i = 0; i< 100; i++){
 
-        //qDebug() << "Main: Testing " << heroLink.recognize(image) << "correct - 5";
-        //qDebug() << "Main: Testing " << heroLink.recognize(anotherImage) << "correct - 7";
-        qDebug() << "Main: Testing " << (heroLink.recognize(image)) << "correct - 0.6";
+//        //qDebug () <<"Main:" <<i+1 << "learning iteration";
+//        heroLink.learningPass(0.001,0.0003);
 
-        //qDebug() << "Main: Testing " << heroLink.recognize(tryItImage) << "correct - 1";
-        //qDebug() << "Main: Testing " << heroLink.recognize(anotherTryItImage) << "correct - 7";
-        //qDebug() << "Main: Testing " << heroLink.recognize(anotherTryItImageDouble << "correct - 9";
-        if (heroLink.recognize(image)==0){
-            //qDebug () << heroLink.getHerons()->mHerons.last().last()->toQString();
-            break;
-        }
+//        //qDebug() << "Main: Testing " << heroLink.recognize(anotherImage) << "correct - 9";
 
-    }
-    QList<double> errors = QList<double>();
+//        if(i%2 == 0){
+//            qDebug() << "Main: " << i<< "iteration:";
+//            QList<double> errors = QList<double>();
 
-    for (auto &limage: images) {
-        double result = heroLink.recognize(limage);
-        double error = fabs(((double)images.indexOf(limage)/10.0)-result);
-        qDebug() << "Main: Testing FINAL" << result << "correct - "<<(double)images.indexOf(limage)/10.0 << error;
-        errors.append(error);
-    }
-    double gError = 0;
-    for (auto &error :errors){
-        gError += error;
-    }
-    qDebug() << "Main: gError ="<<gError/errors.size();
-    qDebug() << "3 - " << heroLink.recognize(image);
-    qDebug() << "7 - " << heroLink.recognize(anotherImage);
+//            for (auto &limage: images) {
+//            double result = heroLink.recognize(limage);
+//                double error = fabs(((double)images.indexOf(limage)/10.0)-result);
+//                qDebug() << "Main:: Testing" << result << "correct - "<<(double)images.indexOf(limage)/10.0 << error;
+//                errors.append(error);
+//            }
+//            double gError = 0;
+//            for (auto &error :errors){
+//                gError += error;
+//            }
+//            qDebug() << "Main: gError ="<<gError/errors.size();
+//        }
+////        qDebug() << "Main: Testing " << heroLink.recognize(anotherImage) << "correct - 7";
+////        qDebug() << "Main: Testing " << (heroLink.recognize(image)) << "correct - 0.3";
+
+////        qDebug() << "Main: Testing " << heroLink.recognize(tryItImage) << "correct - 1";
+////        qDebug() << "Main: Testing " << heroLink.recognize(anotherTryItImage) << "correct - 7";
+////        qDebug() << "Main: Testing " << heroLink.recognize(anotherTryItImageDouble) << "correct - 9";
+////        if (heroLink.recognize(image)==0){
+////            //qDebug () << heroLink.getHerons()->mHerons.last().last()->toQString();
+////            break;
+////        }
+
+//    }
+//    QList<double> errors = QList<double>();
+
+//    for (auto &limage: images) {
+//        double result = heroLink.recognize(limage);
+//        double error = fabs(((double)images.indexOf(limage)/10.0)-result);
+//        qDebug() << "Main: Testing FINAL" << result << "correct - "<<(double)images.indexOf(limage)/10.0 << error;
+//        errors.append(error);
+//    }
+//    double gError = 0;
+//    for (auto &error :errors){
+//        gError += error;
+//    }
+//    qDebug() << "Main: gError ="<<gError/errors.size();
+//    qDebug() << "3 - " << heroLink.recognize(image);
+//    qDebug() << "7 - " << heroLink.recognize(anotherImage);
 //    HeronField herons  = HeronField(QList<int>({1,1,1}));
 //    for (int i = 0; i< 1000; i++) {
 //        qDebug() << herons.calculateOutput(QList<double>({0.5}));
@@ -123,6 +144,101 @@ int main(int argc, char *argv[])
 
 //    }
 //    qDebug() << herons.calculateOutput(QList<double>({0.5})) << "corr 0.9";
+//    Tensor *data = new Tensor(8,8,1);
+//    for (int y = 0; y < data->mSize.height ; y++){
+//        for (int x =0; x < data->mSize.width; x++){
+//            data->set(x,y,0,QRandomGenerator::global()->bounded(2.0)-1);//QRandomGenerator::global()->bounded(5.0)-2.5
+//        }
+//    }
+//    ConvLayer firstLayer  = ConvLayer(TensorSize(8,8,1),TensorSize(4,4,2),5,2);
+//    MaxPoolingLayer secondLayer = MaxPoolingLayer(TensorSize(4,4,2));
+//    Tensor* ten = secondLayer.forward(firstLayer.forward(data));
+
+//    for (int y = 0; y < ten->mSize.height ; y++){
+//        for (int x =0; x < ten->mSize.width; x++){
+//            qDebug() <<ten->get(x,y,0);
+//        }
+//    }
+//    for (int y = 0; y < ten->mSize.height ; y++){
+//        for (int x =0; x < ten->mSize.width; x++){
+//            qDebug() <<ten->get(x,y,1);
+//        }
+//    }
+
+//    CHNetwork chNet = CHNetwork(8,8);
+//    QList<QList<double>> data=  QList<QList<double>>();
+//    for (int y = 0; y < 8;y++) {
+//        data.append(QList<double>());
+//        for(int x = 0; x < 8; x++){
+//            data[y].append(1);
+//        }
+//    }
+//    qDebug() << "MAIN: Result = " << chNet.calculateOutput(data);
+//    ConvLayer convLayer = ConvLayer(TensorSize(8,8,2), TensorSize(6,6,8),3,4);
+//    Tensor *data = new Tensor(6,6,8);
+//    for (int z = 0; z < data->mSize.depth; z++) {
+//        for (int y = 0; y < data->mSize.height ; y++){
+//            for (int x =0; x < data->mSize.width; x++){
+//                data->set(x,y,z,0.005);//QRandomGenerator::global()->bounded(5.0)-2.5
+//            }
+//        }
+
+//    }
+//    Tensor *input= new Tensor(8,8,2.0);
+//    for (int y = 0; y < data->mSize.height ; y++){
+//        for (int x =0; x < data->mSize.width; x++){
+//            input->set(x,y,0,1);//QRandomGenerator::global()->bounded(5.0)-2.5
+//        }
+//    }
+//    MaxPoolingLayer maxPool = MaxPoolingLayer(TensorSize(8,8,2));
+
+//    Tensor input= Tensor(8,8,2.0);
+
+//    for (int d = 0; d < input.mSize.depth; d++){
+//        for (int y = 0; y < input.mSize.height ; y++){
+//            for (int x =0; x < input.mSize.width; x++){
+//                input.set(x,y,d,QRandomGenerator::global()->bounded(5.0)-2.5);//QRandomGenerator::global()->bounded(5.0)-2.5
+//            }
+//        }
+//    }
+//    qDebug() << maxPool.forward(&input);
+//    qDebug() << maxPool.backward(input);
+
+//    Tensor result = convLayer.backward(*data, *input);
+////    for (int i = 0; i < result.mSize.width; i++){
+////        QString layer = QString();
+////        for(int ii = 0; ii < result.mSize.height; ii++){
+////            layer.append(QString::number(result.get(ii,i,0)));
+
+////        }
+////        qDebug() << layer;
+////    }
+//    Tensor filter = *convLayer._filtersGradients;
+////    qDebug() << endl;
+////    for (int i = 0; i < filter.mSize.width; i++){
+////        QString layer = QString();
+////        for(int ii = 0; ii < filter.mSize.height; ii++){
+////            layer.append(QString::number(filter.get(ii,i,0))+ " ");
+
+////        }
+////        qDebug() << layer;
+////    }
+//    qDebug() << result;
+//    qDebug() << filter;
+//    convLayer.updateWeightsOfFilters(0.3);
+//    qDebug() << convLayer._filter;
+//    //qDebug() << result.toQStringSize();
+    CHNetwork chNet = CHNetwork (8,8);
+    QList<QList<double>> data;
+    for(int y = 0; y < 8; y++){
+        data.append(QList<double>());
+        for(int x =0; x < 8; x++){
+            data[y].append(1.0);
+        }
+
+    }
+    qDebug() << "output " << chNet.calculateOutput(data);
+    qDebug()<<"the end";
     return a.exec();
 }
 

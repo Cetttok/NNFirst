@@ -24,7 +24,7 @@ HeronField::HeronField(QList<int> heronsOnLayersAmount, double startWeightMultip
         for (Heron *heron : mHerons[layer]){ //on every heron on layer
             if(layer+1 <mHerons.size()){
                 for(Heron *linkedHeron : mHerons[layer+1]){ // every heron to every heron
-                    double weight = startWeightMultiple*(QRandomGenerator::global()->bounded(2.0)-1.0);
+                    double weight = startWeightMultiple*(QRandomGenerator::global()->bounded(2.0)-1);
                     //qDebug() << "weight"<<weight;
                     if (weight != 0){
                     heron->addLink(linkedHeron, weight);//dont forget to add random weight!!
@@ -32,6 +32,7 @@ HeronField::HeronField(QList<int> heronsOnLayersAmount, double startWeightMultip
                     }
                     else {
                         heron->addLink(linkedHeron,0.005);
+                        qDebug() << "HeronField::HeronField(...): warning! weight is 0 :(";
 
                     }
                 }
@@ -48,7 +49,7 @@ HeronField::HeronField(QList<int> heronsOnLayersAmount, double startWeightMultip
 
 
 }
-void HeronField::makeLearningStep(QList<double> correctOutput, double learningSpeed,double learningMoment){
+QList<double> HeronField::makeLearningStep(QList<double> correctOutput, double learningSpeed,double learningMoment){
     //calculate errors for heron
 
     for(int i = 0; i < mHerons.last().size();i++){
@@ -66,7 +67,7 @@ void HeronField::makeLearningStep(QList<double> correctOutput, double learningSp
             QList<double> weightForForwardErrors = QList<double>();
             for (Link link : activeHeron->mLinks){
                 forwardErrors.append(link.mRecever->mLayerError);
-                weightForForwardErrors.append(link.mWeight);
+                weightForForwardErrors.append(link.weight());
             }
             activeHeron->mLayerError = derFunc(weightedSum(activeHeron->mInputs))
                     *multySum(forwardErrors,weightForForwardErrors);
@@ -100,6 +101,11 @@ void HeronField::makeLearningStep(QList<double> correctOutput, double learningSp
             }
 
         }
+    QList<double> errors  = QList<double> ();
+    for (Heron * heron: mHerons.first()){
+        errors.append(heron->mLayerError);
+    }
+    return errors;
 
 }
 void HeronField::clearInputsAndOutputs(){
@@ -167,7 +173,7 @@ double HeronField::func(double input)
 //        return 0;
 //    }
 //return input;
-    return input;
+    //return input;
 
     //sigmoid
 //    return sin(input);
@@ -177,11 +183,11 @@ double HeronField::func(double input)
     //}
     //qDebug() << input;
 //    //return result;
-//    if (input > 0){
-//          return input;
-//    }
+    if (input > 0){
+          return input;
+    }
 
-//     return 0;
+     return 0;
 }
 double HeronField::derFunc(double input){
     //relLU
@@ -189,13 +195,13 @@ double HeronField::derFunc(double input){
 //    if (input > 1){
 //        return 0;
 //    }
-    return 1;
+//    return 1;
 
 //    //sigmoid
-//    if (input > 0){
-//      return 1;}
+    if (input > 0){
+      return 1;}
 
-//     return 0;
+     return 0;
 ////    //return cos(input);
     double result = func(input)*(1.0-func(input));
     if (result!=result){

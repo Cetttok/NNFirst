@@ -60,8 +60,21 @@ void Heron::addLink(Heron* heron, double weight)
     mLinks.append(Link(this,heron,weight));
 }
 
+double Link::weight() const
+{
+    return mWeight;
+}
+
 Link::Link(Heron *sender, Heron *recever, double weight):
     mSender(sender),mRecever(recever),mWeight(weight)
 {
 //constructor
+}
+
+CHFLink::CHFLink(Heron *sender, Heron *recever, double*weight):Link(sender,recever,*weight)
+{
+    _weight = weight;
+}
+double CHFLink::weight(){
+    return *_weight;
 }

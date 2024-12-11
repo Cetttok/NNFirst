@@ -33,14 +33,17 @@ public:
 //    double lastDWeight; // delta between weights
     QList<Link> mLinks = QList<Link>();// output links (there sender this)
 };
+
+
 class Link
 {
 public:
 
     Heron* mSender;
     Heron* mRecever;
-    double mWeight = 1;
+
     double mLastDWeight = 0;
+
     QString toQString(){
         return QString("Link for Heron {"+QString::number(mSender->mIdLayer)
                        +QString::number(mSender->mId)+"} to {"
@@ -49,5 +52,17 @@ public:
                        +QString::number(mWeight));
     }
     Link(Heron* sender,Heron* recever,double weight);
+    virtual double weight() const;
+
+    double mWeight = 1;
+};
+class CHFLink: public Link
+{
+public:
+    CHFLink(Heron* sender, Heron* recever, double *weight);
+    //    virtual double weight() const;
+    double weight();
+
+    double *_weight = nullptr;
 };
 #endif // HERON_H

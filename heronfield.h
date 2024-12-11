@@ -16,7 +16,7 @@ public:
     //void makeLearningStep(double correctOutput, double learningSpeed, double learningMoment);
 
     void clearInputsAndOutputs();
-    void makeLearningStep(QList<double> correctOutput, double learningSpeed, double learningMoment);
+    QList<double> makeLearningStep(QList<double> correctOutput, double learningSpeed, double learningMoment);
 protected:
     double weightedSum(QList<double> inputs);
 

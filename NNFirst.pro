@@ -21,7 +21,12 @@ SOURCES += \
     imagedecorder.cpp \
     numberrecognizer.cpp \
     convolutionalheronfield.cpp \
-    chflayer.cpp
+    chflayer.cpp \
+    tensor.cpp \
+    convlayer.cpp \
+    maxpoolinglayer.cpp \
+    chnetwork.cpp \
+    filemanager.cpp
 
 HEADERS += \
     heron.h \
@@ -29,7 +34,12 @@ HEADERS += \
     imagedecorder.h \
     numberrecognizer.h \
     convolutionalheronfield.h \
-    chflayer.h
+    chflayer.h \
+    tensor.h \
+    convlayer.h \
+    maxpoolinglayer.h \
+    chnetwork.h \
+    filemanager.h
 
 DISTFILES += \
     data/nums/Arial_0.bmp \
