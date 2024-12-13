@@ -24,7 +24,7 @@ HeronField::HeronField(QList<int> heronsOnLayersAmount, double startWeightMultip
         for (Heron *heron : mHerons[layer]){ //on every heron on layer
             if(layer+1 <mHerons.size()){
                 for(Heron *linkedHeron : mHerons[layer+1]){ // every heron to every heron
-                    double weight = startWeightMultiple*(QRandomGenerator::global()->bounded(2.0)-1);
+                    double weight = startWeightMultiple*(QRandomGenerator::global()->bounded(2.0)-1.0);
                     //qDebug() << "weight"<<weight;
                     if (weight != 0){
                     heron->addLink(linkedHeron, weight);//dont forget to add random weight!!
@@ -187,7 +187,7 @@ double HeronField::func(double input)
           return input;
     }
 
-     return 0;
+     return 0.01*input;
 }
 double HeronField::derFunc(double input){
     //relLU
@@ -199,16 +199,16 @@ double HeronField::derFunc(double input){
 
 //    //sigmoid
     if (input > 0){
-      return 1;}
+      return 1.0;}
 
-     return 0;
+     return 0.01;
 ////    //return cos(input);
-    double result = func(input)*(1.0-func(input));
-    if (result!=result){
-        qDebug() <<"invalid for derFunc"<< func(input);
-    }
-    //qDebug() << result <<func(input)<<input;
-    return result;
+//    double result = func(input)*(1.0-func(input));
+//    if (result!=result){
+//        qDebug() <<"invalid for derFunc"<< func(input);
+//    }
+//    //qDebug() << result <<func(input)<<input;
+//    return result;
     //return 1;
 }
 double HeronField::weightedSum(QList<double> inputs){

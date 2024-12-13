@@ -1,0 +1,14 @@
+INPUT(
+./debug\main.o
+./debug\heron.o
+./debug\heronfield.o
+./debug\imagedecorder.o
+./debug\numberrecognizer.o
+./debug\convolutionalheronfield.o
+./debug\chflayer.o
+./debug\tensor.o
+./debug\convlayer.o
+./debug\maxpoolinglayer.o
+./debug\chnetwork.o
+./debug\filemanager.o
+);

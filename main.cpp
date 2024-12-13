@@ -140,10 +140,10 @@ int main(int argc, char *argv[])
 //    HeronField herons  = HeronField(QList<int>({1,1,1}));
 //    for (int i = 0; i< 1000; i++) {
 //        qDebug() << herons.calculateOutput(QList<double>({0.5}));
-//        herons.makeLearningStep(QList<double>({0.9}),0.03,0.01);
+//        herons.makeLearningStep(QList<double>({1.0}),0.03,0.01);
 
 //    }
-//    qDebug() << herons.calculateOutput(QList<double>({0.5})) << "corr 0.9";
+//    qDebug() << herons.calculateOutput(QList<double>({0.5})) << "corr 1.0";
 //    Tensor *data = new Tensor(8,8,1);
 //    for (int y = 0; y < data->mSize.height ; y++){
 //        for (int x =0; x < data->mSize.width; x++){
@@ -228,16 +228,58 @@ int main(int argc, char *argv[])
 //    convLayer.updateWeightsOfFilters(0.3);
 //    qDebug() << convLayer._filter;
 //    //qDebug() << result.toQStringSize();
-    CHNetwork chNet = CHNetwork (8,8);
-    QList<QList<double>> data;
-    for(int y = 0; y < 8; y++){
-        data.append(QList<double>());
-        for(int x =0; x < 8; x++){
-            data[y].append(1.0);
+//    CHNetwork chNet = CHNetwork (8,8);
+//    QList<QList<double>> data;
+//    for(int y = 0; y < 8; y++){
+//        data.append(QList<double>());
+//        for(int x =0; x < 8; x++){
+//            data[y].append(1.0);
+//        }
+
+//    }
+    QList<QImage> images;
+//    for (int i = 0; i< 10; i++) {
+//        images.append(QImage("data\\nums\\test\\Arial_"+QString::number(i)+".bmp"));
+//    }
+    for (int i = 0; i< 10; i++) {
+        images.append(QImage("data\\nums\\test\\Times_"+QString::number(i)+".bmp"));
+    }
+
+    NumberRecognizer network =NumberRecognizer (QString("data\\nums\\64"), 8,8);
+    //qDebug() << network.recognize(QImage("data\\nums\\64\\Times_9.bmp"))<< endl << endl<< endl << endl;
+    //qDebug() << *network.getHerons() << endl;
+    for (int i = 0; i < 1000; i++){
+        if  (network.recognize(images[0]) == NAN){
+            qDebug() << i << " iteration!";
+            qDebug() << *network.getHerons();
+            break;
+        }
+        if (i%50 == 0){
+            qDebug() << i << " iteration";
+            qDebug() << *network.getHerons();
+            for (int l = 0; l < 10; l++){
+
+                qDebug() << l    << network.recognize(images[l]);
+            }
+
         }
 
+        network.learningPass(0.03,0);
+                //qDebug() << endl << endl<< endl << endl;
+        //qDebug() << network.recognize(QImage("data\\nums\\64\\Times_9.bmp"));
+        //qDebug() << "output " << chNet.calculateOutput(data);
+
     }
-    qDebug() << "output " << chNet.calculateOutput(data);
+    qDebug() << *network.getHerons();
+    for (int l = 0; l < 10; l++){
+
+        qDebug() << l    << network.recognize(images[l]);
+    }
+//    auto &aaa = *network.getHerons();
+//    qDebug() << aaa;
+    //CHNetwork net  = CHNetwork (8,8);
+//    NumberRecognizer num = NumberRecognizer(QString("data\\nums\\64"), 8,8);
+//    qDebug() << *num.getHerons();
     qDebug()<<"the end";
     return a.exec();
 }

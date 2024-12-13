@@ -1,0 +1,14 @@
+INPUT(
+./release\main.o
+./release\heron.o
+./release\heronfield.o
+./release\imagedecorder.o
+./release\numberrecognizer.o
+./release\convolutionalheronfield.o
+./release\chflayer.o
+./release\tensor.o
+./release\convlayer.o
+./release\maxpoolinglayer.o
+./release\chnetwork.o
+./release\filemanager.o
+);

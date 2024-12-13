@@ -35,20 +35,22 @@ public:
     void setMatrix(int z, QList<QList<double>> list);
     double get(int x,int y,int z, QString log ="null") const;
     void augment(int x, int y, int z, double value, QString log = "null");
+    Tensor *copy();
 
     //QDebug &QDebug::operator<<(bool t);
     //QDebug operator<< (QDebug &debug) const;
 
 };
 QDebug operator<<(QDebug debug, const Tensor &tensor);
+
 class Forwarded // and backwarded
 {
 public:
-    virtual Tensor* forward(Tensor *inputTensor, bool isSaveInputs = true) = 0;
-    virtual Tensor backward(Tensor inputErrors, double learningSpeed) = 0;
+    virtual Tensor forward(Tensor &inputTensor, bool isSaveInputs = true) = 0;
+    virtual Tensor backward(Tensor &inputErrors, double learningSpeed) = 0;
     virtual TensorSize getOutputSize() = 0;
     virtual TensorSize getInputSize() = 0;
-
+    virtual void debug(QDebug &debug) = 0;
     //TensorSize mOutputSize;
     //TensorSize mInputSize;
 

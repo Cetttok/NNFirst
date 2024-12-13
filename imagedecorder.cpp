@@ -27,3 +27,16 @@ QList<double> ImageDecorder::decode(QImage image)
     return list;
 }
 
+QList<QList<double> > ImageDecorder::decodeToMatrix(QImage image)
+{
+    QList<QList<double>> matrix;
+    //qDebug () << "decoded";
+    for (unsigned i=0; i<image.width(); ++i)
+    {
+        matrix.append(QList<double>());
+        for (unsigned j=0; j<image.height(); ++j)
+          matrix[i].append((getNumForColor(image.pixel(i,j))));
+    }
+    return matrix;
+}
+

@@ -10,10 +10,12 @@ public:
     int _scale;
 
     TensorSize mOutputSize;
-    Tensor* forward(Tensor *inputTensor, bool isSaveInputs = true);
+    //Tensor* forward(Tensor *inputTensor, bool isSaveInputs = true);
     TensorSize getOutputSize();
     TensorSize getInputSize();
-    Tensor backward(Tensor inputErrors, double learningSpeed);
+    void debug(QDebug &debug);
+    Tensor backward(Tensor &inputErrors, double learningSpeed);
+    Tensor forward(Tensor &inputTensor, bool isSaveInputs);
 private:
     Tensor _maskOfMaximums;
 };

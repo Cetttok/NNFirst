@@ -74,6 +74,14 @@ void Tensor::setMatrix(int z, QList<QList<double> > list)
 
 double Tensor::get(int x, int y, int z, QString log) const
 {
+//    if (log == QString("Weights")){
+
+
+//        qDebug() << "svershilos" << this << nullptr;
+//        qDebug() << this->toQStringSize();
+//        qDebug() << " 1222"<<_values.first().first().first();
+//        qDebug() << "values size" << _values.size();
+//    }
     if (z < _values.size() && y < _values[z].size() && x < _values[z][y].size()){
         if (x <0&& y<0 && z < 0 ){
             qDebug()<< log << "ERROR: get value is invalid! x/y/z = 0? What it mean?" << z << y << x;
@@ -94,6 +102,19 @@ void Tensor::augment(int x, int y, int z, double value, QString log)
 {
     //qDebug() << log <<"augment";
     set(x,y,z, get(x,y,z,log) + value, log );
+}
+
+Tensor* Tensor::copy()
+{
+    Tensor *result = new Tensor(this->mSize);
+    for (int z =0; z < this->mSize.depth; z++){
+        for (int y = 0; y < this->mSize.height; y++  ){
+            for(int x = 0; x<this->mSize.width;x++){
+                result->set(x,y,z,this->get(x,y,z,QString("copy - get")), QString("copy - set"));
+            }
+        }
+    }
+    return result;
 }
 
 

@@ -3,12 +3,12 @@
 CHNetwork::CHNetwork(int width, int height):IMAGE_HEIGHT(height),IMAGE_WIDTH(width)
 {
     _layers.append(new ConvLayer(TensorSize(IMAGE_WIDTH,IMAGE_WIDTH,1),
-                             TensorSize(IMAGE_WIDTH-2,IMAGE_HEIGHT-2,2),3,2));
-    _layers.append(new MaxPoolingLayer(TensorSize(IMAGE_WIDTH-2,IMAGE_HEIGHT-2,2)));
+                             TensorSize(IMAGE_WIDTH-2,IMAGE_HEIGHT-2,4),3,4));
+    _layers.append(new MaxPoolingLayer(TensorSize(IMAGE_WIDTH-2,IMAGE_HEIGHT-2,4)));
     int baseSize = _layers.last()->getOutputSize().width*
             _layers.last()->getOutputSize().height*
             _layers.last()->getOutputSize().depth;
-    _lastLayer = HeronField(QList<int>({baseSize,baseSize,1}));
+    _lastLayer = HeronField(QList<int>({baseSize,baseSize*0.5,1}));
     qDebug() << "CHNetwork::CHNetwork(...) Created! Size: ";
     for (Forwarded *layer : _layers){
 //        qDebug() << "Layer: size(" << layer->getOutputSize().width<<"*" << layer->getOutputSize().height <<
@@ -16,39 +16,49 @@ CHNetwork::CHNetwork(int width, int height):IMAGE_HEIGHT(height),IMAGE_WIDTH(wid
         
     qDebug() << "Layer: size(" << layer->getOutputSize().width<<"*" << layer->getOutputSize().height <<
         ") depth(" << layer->getOutputSize().depth<<")";
-    
+
     }
 
 }
 
 double CHNetwork::calculateOutput(QList<QList<double> > inputMatrix)
 {
-    qDebug() << "double CHNetwork::calculateOutput(...): Starting calculating...";
-    Tensor *input = new Tensor(IMAGE_WIDTH, IMAGE_HEIGHT,1);
-    input->setMatrix(0,inputMatrix);
-    Tensor * activeTensor = input;
+    //qDebug() << "double CHNetwork::calculateOutput(...): Starting calculating...";
+    Tensor input = Tensor(IMAGE_WIDTH, IMAGE_HEIGHT,1);
+    input.setMatrix(0,inputMatrix);
+    Tensor  activeTensor = input;
     for (Forwarded * layer : _layers){
         activeTensor = layer->forward(activeTensor);
-        qDebug() << "double CHNetwork::calculateOutput(...): layer has been calculated!";
+        //qDebug() << "double CHNetwork::calculateOutput(...): layer has been calculated!";
     }
-    qDebug() << "double CHNetwork::calculateOutput(...): Nice! All tensors has been caluclulated!";
-    qDebug() << *activeTensor;
-    double result = _lastLayer.calculateOutput(tensorToQList(*activeTensor))[0];
-    qDebug() << "double CHNetwork::calculateOutput(...): Perfect! Result has been calculated: " << result;
+    //qDebug() << "double CHNetwork::calculateOutput(...): Nice! All tensors has been caluclulated!";
+    //qDebug() << *activeTensor;
+    double result = _lastLayer.calculateOutput(tensorToQList(activeTensor))[0];
+    //qDebug() << "double CHNetwork::calculateOutput(...): Perfect! Result has been calculated: " << result;
+    //delete input;
     return result;
 
 }
-void CHNetwork::learningStep(double learningSpeed, QList<double> correctOutput){
-    Tensor inputs = fromQListToTensor(_lastLayer.makeLearningStep(correctOutput,learningSpeed,0.0), TensorSize(_layers.first()->getInputSize()));
-    qDebug() << "void CHNetwork::learningStep(...): last layer bakcwareded and changed weights";
-    qDebug() <<inputs;
-    for (Forwarded * layer : _layers){
-        inputs = layer->backward(inputs, learningSpeed);
+void CHNetwork::learningStep(QList<double> correctOutput, double learningSpeed){
+    Tensor inputs = fromQListToTensor(_lastLayer.makeLearningStep(correctOutput,learningSpeed,learningSpeed*0.5), TensorSize(_layers.last()->getOutputSize()));
+    //qDebug() << "void CHNetwork::learningStep(...): last layer bakcwareded and changed weights";
+    //qDebug() <<inputs;
+    for (int layer = _layers.size()-1; layer >=0; layer --){
+        inputs = _layers[layer]->backward(inputs, learningSpeed);
+        //qDebug() << inputs;
     }
-    qDebug() << "void CHNetwork::learningStep(...): learning StepMaked";
+    //qDebug() << "void CHNetwork::learningStep(...): learning StepMaked";
 
 }
+QDebug operator<<(QDebug debug, const CHNetwork &net){
+    debug << "CHNetwork(" <<  net.layers().size() << ");" << endl;
+    for (Forwarded *layer : net.layers()){
 
+        layer->debug(debug);
+       // qDebug() << "normaly";
+    }
+    return debug;
+}
 Tensor CHNetwork::fromQListToTensor(QList<double> list, TensorSize size){
     int element = 0;
     Tensor result = Tensor(size);
@@ -69,6 +79,13 @@ Tensor CHNetwork::fromQListToTensor(QList<double> list, TensorSize size){
 
     return result;
 }
+
+QList<Forwarded *> CHNetwork::layers() const
+{
+    return _layers;
+}
+
+
 QList<double> CHNetwork::tensorToQList(Tensor tensor){
     QList<double> result = QList<double> ();
     for (int z = 0; z < tensor.mSize.depth; z++){

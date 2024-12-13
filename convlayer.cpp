@@ -40,7 +40,14 @@ TensorSize ConvLayer::getInputSize()
 {
     return mInputSize;
 }
-Tensor *ConvLayer::forward(Tensor *inputTensor, bool isSaveInputs)
+
+void ConvLayer::debug(QDebug &debug)
+{
+    debug << "Convlayer (" << mInputSize.width << mInputSize.height << mInputSize.depth<<") -> ("
+          << mOutputSize.width << mOutputSize.height << mOutputSize.depth << ")" << endl;
+    debug << _filter;
+}
+Tensor ConvLayer::forward(Tensor& inputTensor, bool isSaveInputs)
 {
     //qDebug()<<
     int cheack = 0;
@@ -50,24 +57,24 @@ Tensor *ConvLayer::forward(Tensor *inputTensor, bool isSaveInputs)
         qDebug() << "Tensor *ConvLayer::forward(...) WHat! Why filter rasius = " << filterRadius;
     }
     else{
-        qDebug() << "Tensor *ConvLayer::forward(...) filterRadius = " << filterRadius;
+        //qDebug() << "Tensor *ConvLayer::forward(...) filterRadius = " << filterRadius;
     }
 
-    qDebug() << "Tensor *ConvLayer::forward(Tensor *inputTensor):";
-    qDebug() <<  "inputTesnor "<<inputTensor->toQStringSize();
-    qDebug() << "_filter " << _filter.toQStringSize();
-    Tensor* result = new Tensor(mOutputSize);
+    //qDebug() << "Tensor *ConvLayer::forward(Tensor *inputTensor):";
+    //qDebug() <<  "inputTesnor "<<inputTensor->toQStringSize();
+    //qDebug() << "_filter " << _filter.toQStringSize();
+    Tensor result = Tensor(mOutputSize);
     //qDebug() << _filter.mSize.width << _filter.mSize.height << _filter.mSize.depth;
     for (int i = 0; i< _filter.mSize.depth; i++ ){ // evry filter
-        qDebug() <<"Tensor *ConvLayer::forward(...) by new filter" << i ;
-        for (int z =0; z < inputTensor->mSize.depth; z++){ // every input matrix
+        //qDebug() <<"Tensor *ConvLayer::forward(...) by new filter" << i ;
+        for (int z =0; z < inputTensor.mSize.depth; z++){ // every input matrix
             //qDebug() <<"z = " << z;
             QList<QList<double>> lfilter = _filter.getMatrix(i);
-            QList<QList<double>> inputMatrix = inputTensor->getMatrix(z);
+            QList<QList<double>> inputMatrix = inputTensor.getMatrix(z);
 
-            for (int y = filterRadius; y < inputTensor->mSize.height-filterRadius; y++){ // every layer
+            for (int y = filterRadius; y < inputTensor.mSize.height-filterRadius; y++){ // every layer
                 //qDebug() << "y = " << y;
-                for (int x = filterRadius; x < inputTensor->mSize.width-filterRadius; x++){ // every cell
+                for (int x = filterRadius; x < inputTensor.mSize.width-filterRadius; x++){ // every cell
                     //qDebug() << "x = " << x;
                     double sum = 0; // можно добавить смешение
 
@@ -75,7 +82,7 @@ Tensor *ConvLayer::forward(Tensor *inputTensor, bool isSaveInputs)
                     sum+= pairedMultyply(underFilter, lfilter);
                     //sum+= pairedMulytply(getCellsUnderFilter(&_filter[i],&inputTensor[z],x,y), &_filter);
                     //qDebug() <<"sum = "<<    sum;
-                    result->set(x-filterRadius,y-filterRadius,i,sum);
+                    result.set(x-filterRadius,y-filterRadius,i,sum);
                     cheack++;
 
                 }
@@ -86,12 +93,14 @@ Tensor *ConvLayer::forward(Tensor *inputTensor, bool isSaveInputs)
         //qDebug() << 3;
 
     }
-    if (isSaveInputs){
-        _lastInputTensor = &(*inputTensor);
-        qDebug() << "Tensor *ConvLayer::forward(...) input saved.";
+    if (true){
+        delete _lastInputTensor;
+        _lastInputTensor = inputTensor.copy();
+        //delete inputTensor;
+        //qDebug() << "Tensor *ConvLayer::forward(...) input saved." << _lastInputTensor->toQStringSize();
     }
-    qDebug() << "Tensor *ConvLayer::forward(...) forward ended sucsessfuul!";
-    qDebug() << *result;
+    //qDebug() << "Tensor *ConvLayer::forward(...) forward ended sucsessfuul!";
+    //qDebug() << *result;
     return result;
 }
 
@@ -105,18 +114,18 @@ void ConvLayer::updateWeightsOfFilters(double learningSpeed)
             }
         }
     }
-    qDebug() << "void ConvLayer::updateWeightsOfFilters(...): DONE! :| all weights for all filters upDated!";
+    //qDebug() << "void ConvLayer::updateWeightsOfFilters(...): DONE! :| all weights for all filters upDated!";
 }
 
-Tensor ConvLayer::backward(Tensor inputDeltas,double learningSpeed)
+Tensor ConvLayer::backward(Tensor &inputDeltas, double learningSpeed)
 {
     
      // размер дельт
 
     // расчитываем размер для дельт
-
-
-    if (_lastInputTensor = nullptr){
+    //qDebug() << _lastInputTensor;
+    //qDebug() << _lastInputTensor->toQStringSize() << _lastInputTensor->get(0,0,0);
+    if (_lastInputTensor ==  nullptr){
         qDebug() << "Tensor ConvLayer::backward(...): Ta-dam! Please make calulating step before!";
         return Tensor(0,0,0);
     }
@@ -133,16 +142,18 @@ Tensor ConvLayer::backward(Tensor inputDeltas,double learningSpeed)
             }
         }
     }
-    qDebug() << "Tensor ConvLayer::backward(...): setted.";
+    //qDebug() << _lastInputTensor;
+    //qDebug() << "Tensor ConvLayer::backward(...): setted.";
     for (int z = 0; z < _filtersCount; z++) {
-        qDebug() << "Tensor ConvLayer::backward(...): new filter!";
+        //qDebug() << "Tensor ConvLayer::backward(...): new filter!";
         for (int y = 0; y < mOutputSize.height; y++) {
             for (int x = 0; x < mOutputSize.width; x++) {// every cell
                 //qDebug() << z << y << x;
+
                 double delta = inputDeltas.get(x, y, z, QString("starting Weighs")); // запоминаем значение градиента
-                if (delta == 0){
-                    qDebug() << "Tensor ConvLayer::backward(...): new filter!";
-                }
+//                if (delta == 0){
+//                    qDebug() << "Tensor ConvLayer::backward(...): delta is 0! x, y,z - " <<x<<y<<z;
+//                }
 
 
                 for (int dX = -filterRadious; dX < filterRadious+1; dX++) { //по всему фильтру высота
@@ -158,7 +169,10 @@ Tensor ConvLayer::backward(Tensor inputDeltas,double learningSpeed)
                             //qDebug() <<;
 
                             for (int d = 0 ; d < mInputSize.depth; d++) {
-                                _filtersGradients->augment(dX+filterRadious, dY+filterRadious, z,delta* _lastInputTensor->get(x+dX, y+dY, d, QString("Weights")));
+                                //qDebug() << _lastInputTensor;
+                                _lastInputTensor->get(x+dX, y+dY, d, QString("Weights"));
+                                double value = delta* _lastInputTensor->get(x+dX, y+dY, d, QString("Weights"));
+                                _filtersGradients->augment(dX+filterRadious, dY+filterRadious, z,value);
                             }
 
 
@@ -172,7 +186,7 @@ Tensor ConvLayer::backward(Tensor inputDeltas,double learningSpeed)
             }
         }
     }
-    qDebug() << "Tensor ConvLayer::backward(...): weight gradients maked" << _filtersGradients->toQStringSize();
+    //qDebug() << "Tensor ConvLayer::backward(...): weight gradients maked" << _filtersGradients->toQStringSize();
 
 
 

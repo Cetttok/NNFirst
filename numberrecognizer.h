@@ -4,7 +4,9 @@
 #include <QImage>
 #include "heronfield.h"
 #include <imagedecorder.h>
-#include "convolutionalheronfield.h"
+//#include "chnetwork.h"
+#include "chnetwork.h"
+//#include "convolutionalheronfield.h"
 class ImageNumConvolutionSelection;
 class ImageNumSelection;
 class NumberRecognizer
@@ -17,11 +19,13 @@ public:
     NumberRecognizer(QString data, int imageWidth, int imageHeight);
     double recognize(QImage image);
     void learningPass(double learningSpeed, double learningMoment);
-    HeronField * getHerons(){
+    CHNetwork * getHerons(){
         return &_herons;
     }
+
 protected:
-    HeronField _herons;
+    //HeronField _herons;
+    CHNetwork _herons;
     //ConvolutionalHeronField _herons;
     ImageDecorder _decoder = ImageDecorder();
 
@@ -29,13 +33,13 @@ protected:
 
 class ImageNumSelection{
 public:
-    ImageNumSelection(QList<double> pixels, double num){
+    ImageNumSelection(QList<QList<double>> pixels, double num){
         mNum = num;
         mPixels = pixels;
     }
     double mNum;
 
-    QList<double> mPixels;
+    QList<QList<double>> mPixels;
 };
 //class ImageNumConvolutionSelection{
 //public:
