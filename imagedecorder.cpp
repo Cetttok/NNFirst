@@ -6,13 +6,21 @@ ImageDecorder::ImageDecorder()
 }
 
 
-int ImageDecorder::getNumForColor(QRgb color){
+int ImageDecorder::getNumForColor(QRgb color, int countClasses){
     if (activeColors.contains(color)){
+
         return activeColors.indexOf(color);
     }
     else{
-        activeColors.append(color);
-        qDebug() << "ImageDecorder: added new color";
+        if (activeColors.size() < countClasses){
+            activeColors.append(color);
+            return activeColors.size()-1;
+            qDebug() << "ImageDecorder: added new color";
+        }
+        else{
+            return activeColors.size();
+        }
+
     }
 }
 QList<double> ImageDecorder::decode(QImage image)

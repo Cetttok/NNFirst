@@ -17,6 +17,7 @@ public:
     TensorSize getInputSize();
     void debug(QDebug &debug);
 
+    void upDateCore(Tensor newCore);
     Tensor * _filtersGradients = nullptr;
     Tensor _filter;
 private:

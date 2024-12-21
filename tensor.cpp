@@ -64,8 +64,12 @@ void Tensor::set(int x, int y, int z, double value, QString log){
 
 void Tensor::setMatrix(int z, QList<QList<double> > list)
 {
+    //qDebug() <<  *this;
+
     if(z >= 0 && z < _values.size()){
         _values[z] = list;
+        //qDebug() <<  *this;
+        //qDebug() << "normally";
     }
     else{
         qDebug() << "ERROR set matrix  is invalid!  z = " << z<< "/" << _values.size()-1  << "max legal" ;
@@ -82,6 +86,7 @@ double Tensor::get(int x, int y, int z, QString log) const
 //        qDebug() << " 1222"<<_values.first().first().first();
 //        qDebug() << "values size" << _values.size();
 //    }
+
     if (z < _values.size() && y < _values[z].size() && x < _values[z][y].size()){
         if (x <0&& y<0 && z < 0 ){
             qDebug()<< log << "ERROR: get value is invalid! x/y/z = 0? What it mean?" << z << y << x;
@@ -106,11 +111,11 @@ void Tensor::augment(int x, int y, int z, double value, QString log)
 
 Tensor* Tensor::copy()
 {
-    Tensor *result = new Tensor(this->mSize);
-    for (int z =0; z < this->mSize.depth; z++){
-        for (int y = 0; y < this->mSize.height; y++  ){
-            for(int x = 0; x<this->mSize.width;x++){
-                result->set(x,y,z,this->get(x,y,z,QString("copy - get")), QString("copy - set"));
+    Tensor *result = new Tensor(mSize);
+    for (int z =0; z < mSize.depth; z++){
+        for (int y = 0; y < mSize.height; y++  ){
+            for(int x = 0; x<mSize.width;x++){
+                result->set(x,y,z,get(x,y,z,QString("copy - get")), QString("copy - set"));
             }
         }
     }
@@ -139,5 +144,12 @@ QDebug operator<<(QDebug debug, const Tensor &tensor)
         debug<< qPrintable(string) << endl << endl;
 
     }
+    return debug;
+}
+
+QDebug operator<<(QDebug debug, const TensorSize &tensorSize)
+{
+
+    debug << "TensorSize(" << tensorSize.width << "*" << tensorSize.height << "," << tensorSize.depth << ")";
     return debug;
 }

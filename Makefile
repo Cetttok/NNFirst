@@ -208,7 +208,6 @@ Makefile: NNFirst.pro F:/Qt/5.11.1/mingw53_32/mkspecs/win32-g++/qmake.conf F:/Qt
 		F:/Qt/5.11.1/mingw53_32/mkspecs/features/resolve_config.prf \
 		F:/Qt/5.11.1/mingw53_32/mkspecs/features/exclusive_builds_post.prf \
 		F:/Qt/5.11.1/mingw53_32/mkspecs/features/default_post.prf \
-		F:/Qt/5.11.1/mingw53_32/mkspecs/features/win32/console.prf \
 		F:/Qt/5.11.1/mingw53_32/mkspecs/features/qml_debug.prf \
 		F:/Qt/5.11.1/mingw53_32/mkspecs/features/precompile_header.prf \
 		F:/Qt/5.11.1/mingw53_32/mkspecs/features/warn_on.prf \
@@ -216,13 +215,17 @@ Makefile: NNFirst.pro F:/Qt/5.11.1/mingw53_32/mkspecs/win32-g++/qmake.conf F:/Qt
 		F:/Qt/5.11.1/mingw53_32/mkspecs/features/resources.prf \
 		F:/Qt/5.11.1/mingw53_32/mkspecs/features/moc.prf \
 		F:/Qt/5.11.1/mingw53_32/mkspecs/features/win32/opengl.prf \
+		F:/Qt/5.11.1/mingw53_32/mkspecs/features/uic.prf \
 		F:/Qt/5.11.1/mingw53_32/mkspecs/features/qmake_use.prf \
 		F:/Qt/5.11.1/mingw53_32/mkspecs/features/file_copies.prf \
+		F:/Qt/5.11.1/mingw53_32/mkspecs/features/win32/windows.prf \
 		F:/Qt/5.11.1/mingw53_32/mkspecs/features/testcase_targets.prf \
 		F:/Qt/5.11.1/mingw53_32/mkspecs/features/exceptions.prf \
 		F:/Qt/5.11.1/mingw53_32/mkspecs/features/yacc.prf \
 		F:/Qt/5.11.1/mingw53_32/mkspecs/features/lex.prf \
 		NNFirst.pro \
+		F:/Qt/5.11.1/mingw53_32/lib/qtmaind.prl \
+		F:/Qt/5.11.1/mingw53_32/lib/Qt5Widgets.prl \
 		F:/Qt/5.11.1/mingw53_32/lib/Qt5Gui.prl \
 		F:/Qt/5.11.1/mingw53_32/lib/Qt5Core.prl
 	$(QMAKE) -o Makefile NNFirst.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
@@ -373,7 +376,6 @@ F:/Qt/5.11.1/mingw53_32/mkspecs/features/win32/default_pre.prf:
 F:/Qt/5.11.1/mingw53_32/mkspecs/features/resolve_config.prf:
 F:/Qt/5.11.1/mingw53_32/mkspecs/features/exclusive_builds_post.prf:
 F:/Qt/5.11.1/mingw53_32/mkspecs/features/default_post.prf:
-F:/Qt/5.11.1/mingw53_32/mkspecs/features/win32/console.prf:
 F:/Qt/5.11.1/mingw53_32/mkspecs/features/qml_debug.prf:
 F:/Qt/5.11.1/mingw53_32/mkspecs/features/precompile_header.prf:
 F:/Qt/5.11.1/mingw53_32/mkspecs/features/warn_on.prf:
@@ -381,13 +383,17 @@ F:/Qt/5.11.1/mingw53_32/mkspecs/features/qt.prf:
 F:/Qt/5.11.1/mingw53_32/mkspecs/features/resources.prf:
 F:/Qt/5.11.1/mingw53_32/mkspecs/features/moc.prf:
 F:/Qt/5.11.1/mingw53_32/mkspecs/features/win32/opengl.prf:
+F:/Qt/5.11.1/mingw53_32/mkspecs/features/uic.prf:
 F:/Qt/5.11.1/mingw53_32/mkspecs/features/qmake_use.prf:
 F:/Qt/5.11.1/mingw53_32/mkspecs/features/file_copies.prf:
+F:/Qt/5.11.1/mingw53_32/mkspecs/features/win32/windows.prf:
 F:/Qt/5.11.1/mingw53_32/mkspecs/features/testcase_targets.prf:
 F:/Qt/5.11.1/mingw53_32/mkspecs/features/exceptions.prf:
 F:/Qt/5.11.1/mingw53_32/mkspecs/features/yacc.prf:
 F:/Qt/5.11.1/mingw53_32/mkspecs/features/lex.prf:
 NNFirst.pro:
+F:/Qt/5.11.1/mingw53_32/lib/qtmaind.prl:
+F:/Qt/5.11.1/mingw53_32/lib/Qt5Widgets.prl:
 F:/Qt/5.11.1/mingw53_32/lib/Qt5Gui.prl:
 F:/Qt/5.11.1/mingw53_32/lib/Qt5Core.prl:
 qmake: FORCE

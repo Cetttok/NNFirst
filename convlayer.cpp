@@ -47,9 +47,16 @@ void ConvLayer::debug(QDebug &debug)
           << mOutputSize.width << mOutputSize.height << mOutputSize.depth << ")" << endl;
     debug << _filter;
 }
+
+void ConvLayer::upDateCore(Tensor newCore)
+{
+    _filter = newCore;
+}
 Tensor ConvLayer::forward(Tensor& inputTensor, bool isSaveInputs)
 {
     //qDebug()<<
+    //qDebug() << inputTensor.toQStringSize();
+    //qDebug() <<inputTensor.get(0,0,0,QString("tadam"));
     int cheack = 0;
     int filterRadius = (_filter.mSize.width-1)/2;
 
@@ -93,12 +100,14 @@ Tensor ConvLayer::forward(Tensor& inputTensor, bool isSaveInputs)
         //qDebug() << 3;
 
     }
-    if (true){
-        delete _lastInputTensor;
-        _lastInputTensor = inputTensor.copy();
+
+
+    delete _lastInputTensor;
+    //qDebug() << inputTensor;
+    _lastInputTensor = inputTensor.copy();
         //delete inputTensor;
         //qDebug() << "Tensor *ConvLayer::forward(...) input saved." << _lastInputTensor->toQStringSize();
-    }
+
     //qDebug() << "Tensor *ConvLayer::forward(...) forward ended sucsessfuul!";
     //qDebug() << *result;
     return result;
@@ -109,7 +118,7 @@ void ConvLayer::updateWeightsOfFilters(double learningSpeed)
     for (int filter = 0; filter < _filter.mSize.depth; filter++){
         for (int  y = 0; y < _filter.mSize.height; y++){
             for (int x = 0; x < _filter.mSize.width; x++){
-                _filter.augment(x,y,filter,_filtersGradients->get(x,y,filter,QString("UpDate weights"))* (-learningSpeed), QString("UpDate weights"));
+                _filter.augment(x,y,filter,_filtersGradients->get(x,y,filter,QString("UpDate weights"))* (learningSpeed), QString("UpDate weights"));
                 _filtersGradients->set(x,y,filter,0, QString("UpDate weights, clear gradients"));
             }
         }

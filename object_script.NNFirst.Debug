@@ -11,4 +11,5 @@ INPUT(
 ./debug\maxpoolinglayer.o
 ./debug\chnetwork.o
 ./debug\filemanager.o
+./debug\resultviewer.o
 );

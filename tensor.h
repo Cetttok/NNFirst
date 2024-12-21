@@ -4,9 +4,9 @@
 #include <QDebug>
 struct TensorSize
 {
-    int width;
-    int height;
-    int depth;
+    int width=0;
+    int height=0;
+    int depth=0;
     TensorSize(int w, int h, int d){
         width = w;
         height = h;
@@ -42,12 +42,14 @@ public:
 
 };
 QDebug operator<<(QDebug debug, const Tensor &tensor);
+QDebug operator<<(QDebug debug, const TensorSize &tensorSize);
 
 class Forwarded // and backwarded
 {
 public:
     virtual Tensor forward(Tensor &inputTensor, bool isSaveInputs = true) = 0;
     virtual Tensor backward(Tensor &inputErrors, double learningSpeed) = 0;
+    virtual void upDateCore(Tensor  newCore) = 0;
     virtual TensorSize getOutputSize() = 0;
     virtual TensorSize getInputSize() = 0;
     virtual void debug(QDebug &debug) = 0;

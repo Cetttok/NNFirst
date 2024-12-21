@@ -6,7 +6,7 @@ double e = 2.7182818284;
 
 HeronField::HeronField(QList<int> heronsOnLayersAmount, double startWeightMultiple)
 {
-    QRandomGenerator::system();
+    //QRandomGenerator::system();
     mHerons = QList<QList<Heron*>>();
     //create herons
     //qDebug() <<heronsOnLayersAmount;
@@ -177,17 +177,18 @@ double HeronField::func(double input)
 
     //sigmoid
 //    return sin(input);
-    //double result = 1/(1+ qPow(e,(-input)));
+    //return 1/(1+ qPow(e,(-input)));
     //if (result!=result){
       //  qDebug() << "invalid "<<result;
     //}
     //qDebug() << input;
 //    //return result;
-    if (input > 0){
-          return input;
-    }
+//    if (input > 0){
+//          return input;
+//    }
 
-     return 0.01*input;
+//     return 0.001 * input;
+    return input/(1+fabs(input));
 }
 double HeronField::derFunc(double input){
     //relLU
@@ -198,12 +199,14 @@ double HeronField::derFunc(double input){
 //    return 1;
 
 //    //sigmoid
-    if (input > 0){
-      return 1.0;}
+//    if (input > 0){
+//      return 1.0;}
 
-     return 0.01;
-////    //return cos(input);
-//    double result = func(input)*(1.0-func(input));
+//     return 0.001;
+    return 1/((1+fabs(input))*(1+fabs(input)));
+
+    ////    //return cos(input);
+    //return func(input)*(1.0-func(input));
 //    if (result!=result){
 //        qDebug() <<"invalid for derFunc"<< func(input);
 //    }
