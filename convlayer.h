@@ -7,7 +7,7 @@ class ConvLayer : public Forwarded
 public:
     ConvLayer(TensorSize inputSize, TensorSize outputSize, int filterSize, int filterCount);
 
-    Tensor forward(Tensor &inputTensor, bool isSaveInputs = true);
+    Tensor forward(Tensor &inputTensor);
     TensorSize mInputSize;
     void updateWeightsOfFilters(double learningSpeed);
     TensorSize mOutputSize;
@@ -16,7 +16,7 @@ public:
     TensorSize getOutputSize();
     TensorSize getInputSize();
     void debug(QDebug &debug);
-
+    Tensor getFilters();
     void upDateCore(Tensor newCore);
     Tensor * _filtersGradients = nullptr;
     Tensor _filter;

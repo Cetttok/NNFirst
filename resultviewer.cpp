@@ -72,8 +72,16 @@ int getMaxIdFormList(QList<double> &list){
     return max+1;
 }
 int getSecondMaxIdFormList(QList<double> list){
-    list.removeAt(getMaxIdFormList(list)-1);
-    return getMaxIdFormList(list);
+    int maxId = getMaxIdFormList(list);
+    int max = 0;
+    for (int i = 0; i < list.size(); i++){
+        if (list[i] > list[max] && i != maxId-1){
+            max = i;
+        }
+    }
+    return max+1;
+
+
 }
 void ResultViewer::upDate(int iteration){
 

@@ -6,7 +6,7 @@ ConvLayer::ConvLayer(TensorSize inputSize,TensorSize outputSize,int filterSize, 
     mOutputSize(outputSize),
     _filter(Tensor(filterSize,filterSize,filterCount))
 {
-    qDebug() << "ConvLayer::ConvLayer start creating..." << endl;
+   // qDebug() << "ConvLayer::ConvLayer start creating..." << endl;
     //_inputSize = size;
     //_outputSize = ;
     //_filter = Tensor(_filtersSize,_filtersSize,_filtersCount);
@@ -26,9 +26,9 @@ ConvLayer::ConvLayer(TensorSize inputSize,TensorSize outputSize,int filterSize, 
     _filtersGradients = new Tensor(TensorSize(filterSize,filterSize, filterCount));
     _filtersSize = filterSize;
     _filtersCount = filterCount;
-    qDebug() << "ConvLayer::ConvLayer(...): input size" << mInputSize.width << mInputSize.height << mInputSize.depth;
-    qDebug() << "ConvLayer::ConvLayer(...): output size " << mOutputSize.width << mOutputSize.height << mOutputSize.depth;
-    qDebug() << "ConvLayer::ConvLayer created! :)" <<endl;
+   // qDebug() << "ConvLayer::ConvLayer(...): input size" << mInputSize.width << mInputSize.height << mInputSize.depth;
+   // qDebug() << "ConvLayer::ConvLayer(...): output size " << mOutputSize.width << mOutputSize.height << mOutputSize.depth;
+    //qDebug() << "ConvLayer::ConvLayer created! :)" <<endl;
 
 
 }
@@ -48,11 +48,21 @@ void ConvLayer::debug(QDebug &debug)
     debug << _filter;
 }
 
+Tensor ConvLayer::getFilters()
+{
+    return _filter;
+}
+
 void ConvLayer::upDateCore(Tensor newCore)
 {
-    _filter = newCore;
+    if (_filter.mSize == newCore.mSize){
+        _filter = newCore;
+    }
+    else{
+        qDebug() << "ConvLayer::upDateCore(...): not Cation upDate/ bad filter(core)";
+    }
 }
-Tensor ConvLayer::forward(Tensor& inputTensor, bool isSaveInputs)
+Tensor ConvLayer::forward(Tensor& inputTensor)
 {
     //qDebug()<<
     //qDebug() << inputTensor.toQStringSize();

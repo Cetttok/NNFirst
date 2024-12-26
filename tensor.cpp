@@ -153,3 +153,22 @@ QDebug operator<<(QDebug debug, const TensorSize &tensorSize)
     debug << "TensorSize(" << tensorSize.width << "*" << tensorSize.height << "," << tensorSize.depth << ")";
     return debug;
 }
+
+bool operator ==(TensorSize &a, TensorSize &b)
+{
+
+    if (a.depth == b.depth){
+        if (a.height == b.height){
+            if (a .width == b.width){
+                return true;
+            }
+        }
+    }
+    return false;
+
+}
+
+QString TensorSize::exportToString()
+{
+    return QString("(" + QString::number(width) + "," + QString::number(height) + "," + QString::number(depth) + ")");
+}

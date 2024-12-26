@@ -19,7 +19,7 @@ public:
 //    double l; /// summ for enters l
 //    double o;///  heron output
     double mLayerError = 0;
-
+    QList<Link*> getPointersToLinks();
     QString toQString();
     Link getLinkForHeron(int layer, int heron);
     void addLink(Heron *heron, double weight);
@@ -45,24 +45,27 @@ public:
     double mLastDWeight = 0;
 
     QString toQString(){
-        return QString("Link for Heron {"+QString::number(mSender->mIdLayer)
-                       +QString::number(mSender->mId)+"} to {"
-                       +QString::number(mRecever->mIdLayer)
-                       +QString::number(mRecever->mId)+ "} weight = "
-                       +QString::number(mWeight));
+//        return QString("Link for Heron {"+QString::number(mSender->mIdLayer)
+//                       +QString::number(mSender->mId)+"} to {"
+//                       +QString::number(mRecever->mIdLayer)
+//                       +QString::number(mRecever->mId)+ "} weight = "
+//                       +QString::number(mWeight));
+        return QString::number(mWeight);
     }
     Link(Heron* sender,Heron* recever,double weight);
     virtual double weight() const;
 
     double mWeight = 1;
 };
-class CHFLink: public Link
+struct HeronData
 {
-public:
-    CHFLink(Heron* sender, Heron* recever, double *weight);
-    //    virtual double weight() const;
-    double weight();
+    QList<double> mWeights;
+    double mBasis;
+    int mId;
+    int mLayer;
+    HeronData(int id, int layer, QList<double> weights, double basis);
 
-    double *_weight = nullptr;
+
 };
+QDebug operator<<(QDebug debug, const HeronData &data);
 #endif // HERON_H

@@ -13,11 +13,11 @@ class ImageNumSelection;
 class NumberRecognizer
 {
 public:
-    const int IMAGE_WIDTH;
-    const int IMAGE_HEIGHT;
+//    const int IMAGE_WIDTH;
+//    const int IMAGE_HEIGHT;
     QMap<int,ImageNumSelection> mData;
     //QMap<int,ImageNumConvolutionSelection> mData;
-    NumberRecognizer(QString data, int imageWidth, int imageHeight, QString savePath = "null");
+    NumberRecognizer(QString data, int imageWidth, int imageHeight, QString convData = "null", QString heronsData = "null");
     QList<double> recognize(QImage image);
     void learningPass(double learningSpeed, double learningMoment);
     CHNetwork * getHerons(){
@@ -25,7 +25,8 @@ public:
     }
     FileManager *mFileManager = nullptr;
 
-    void upDateAndConstructFromFile();
+    //void upDateAndConstructFromFile();
+    void save();
 protected:
     //HeronField _herons;
     CHNetwork _herons;

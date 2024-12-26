@@ -35,7 +35,7 @@ Tensor MaxPoolingLayer::backward(Tensor &inputErrors, double learningSpeed){
     //qDebug() << "Tensor MaxPoolingLayer::backward(...) completed succesfull!";
     return result;
 }
-Tensor MaxPoolingLayer::forward(Tensor &inputTensor, bool isSaveInputs)
+Tensor MaxPoolingLayer::forward(Tensor &inputTensor)
 {
     Tensor result = Tensor(mOutputSize);
     for (int z = 0; z < mInputSize.depth; z++){

@@ -2,6 +2,7 @@
 #include <qDebug>
 #include <QRandomGenerator>
 #include <QtMath>
+
 double e = 2.7182818284;
 
 HeronField::HeronField(QList<int> heronsOnLayersAmount, double startWeightMultiple)
@@ -16,6 +17,7 @@ HeronField::HeronField(QList<int> heronsOnLayersAmount, double startWeightMultip
             mHerons[layer].append(new Heron(layer,heron,startWeightMultiple*(QRandomGenerator::global()->bounded(2.0)-1.0)));
         }
     }
+    mSize = heronsOnLayersAmount;
     //qDebug() << "herons created for scheme = "<< heronsOnLayersAmount;
 
 
@@ -163,6 +165,39 @@ QList<double> HeronField::calculateOutput(QList<double> inputs)
 
 }
 
+void HeronField::updateHeron(HeronData data)
+{
+    QList<Link*> links;
+    if (data.mLayer < mHerons.size()){
+        if (data.mId < mHerons[data.mLayer].size()){
+            links = mHerons[data.mLayer][data.mId]->getPointersToLinks();
+            mHerons[data.mLayer][data.mId]->mBias = data.mBasis;
+        }
+        else{
+            qDebug() << "HeronField::updateHeron(...):  Cant update heron _ bad mId!";
+            return;
+        }
+    }
+    else{
+        qDebug() << "HeronField::updateHeron(...): Cant update data - bad LayerId";
+        return;
+    }
+
+    if (data.mWeights.size() != links.size()){
+        qDebug() << "HeronField::updateHeron(...): Bad data or different strucuture" << data;
+        return;
+    }
+    for (int  i = 0 ; i < data.mWeights.size(); i++){
+        if (i >= links.size()){
+            qDebug() << "HeronField::updateHeron(...): Tram - pam. Bad struct or data";
+            break;
+        }
+        links[i]->mWeight= data.mWeights[i];
+        links[i]->mLastDWeight = 0;
+
+    }
+}
+
 double HeronField::func(double input)
 {
     //qDebug() << "func "<< input;
@@ -189,6 +224,7 @@ double HeronField::func(double input)
 
 //     return 0.001 * input;
     return input/(1+fabs(input));
+    //return input;
 }
 double HeronField::derFunc(double input){
     //relLU

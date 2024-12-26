@@ -17,6 +17,7 @@ struct TensorSize
         height = 0;
         depth = 0;
     }
+    QString exportToString();
 
 };
 
@@ -41,18 +42,21 @@ public:
     //QDebug operator<< (QDebug &debug) const;
 
 };
+bool operator == (TensorSize &a, TensorSize &b);
+
 QDebug operator<<(QDebug debug, const Tensor &tensor);
 QDebug operator<<(QDebug debug, const TensorSize &tensorSize);
 
 class Forwarded // and backwarded
 {
 public:
-    virtual Tensor forward(Tensor &inputTensor, bool isSaveInputs = true) = 0;
+    virtual Tensor forward(Tensor &inputTensor) = 0;
     virtual Tensor backward(Tensor &inputErrors, double learningSpeed) = 0;
-    virtual void upDateCore(Tensor  newCore) = 0;
+    //virtual void upDateCore(Tensor  newCore) = 0;
     virtual TensorSize getOutputSize() = 0;
     virtual TensorSize getInputSize() = 0;
     virtual void debug(QDebug &debug) = 0;
+    //virtual Tensor getFilters() = 0;
     //TensorSize mOutputSize;
     //TensorSize mInputSize;
 

@@ -27,8 +27,6 @@ SOURCES += \
     heronfield.cpp \
     imagedecorder.cpp \
     numberrecognizer.cpp \
-    convolutionalheronfield.cpp \
-    chflayer.cpp \
     tensor.cpp \
     convlayer.cpp \
     maxpoolinglayer.cpp \
@@ -41,8 +39,6 @@ HEADERS += \
     heronfield.h \
     imagedecorder.h \
     numberrecognizer.h \
-    convolutionalheronfield.h \
-    chflayer.h \
     tensor.h \
     convlayer.h \
     maxpoolinglayer.h \
@@ -62,5 +58,6 @@ HEADERS += \
 
 
 DISTFILES += \
-    data/data.txt
+    data/convData.txt \
+    data/heronFieldData.txt
 

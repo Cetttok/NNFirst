@@ -14,9 +14,8 @@ public:
     TensorSize getOutputSize();
     TensorSize getInputSize();
     void debug(QDebug &debug);
-    void upDateCore(Tensor  newCore){}
     Tensor backward(Tensor &inputErrors, double learningSpeed);
-    Tensor forward(Tensor &inputTensor, bool isSaveInputs);
+    Tensor forward(Tensor &inputTensor);
 private:
     Tensor _maskOfMaximums;
 };

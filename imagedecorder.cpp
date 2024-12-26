@@ -2,7 +2,7 @@
 #include <qDebug>
 ImageDecorder::ImageDecorder()
 {
-    qDebug() << "IMAGE DECODER HAS BEEN CREATED TYPE: ";
+    qDebug() << "IMAGE DECODER HAS BEEN CREATED!";
 }
 
 

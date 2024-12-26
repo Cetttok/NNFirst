@@ -4,8 +4,6 @@ INPUT(
 ./debug\heronfield.o
 ./debug\imagedecorder.o
 ./debug\numberrecognizer.o
-./debug\convolutionalheronfield.o
-./debug\chflayer.o
 ./debug\tensor.o
 ./debug\convlayer.o
 ./debug\maxpoolinglayer.o
