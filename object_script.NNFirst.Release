@@ -10,4 +10,6 @@ INPUT(
 ./release\chnetwork.o
 ./release\filemanager.o
 ./release\resultviewer.o
+./release\resultchecker.o
+./release\moc_resultchecker.o
 );

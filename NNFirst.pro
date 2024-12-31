@@ -32,7 +32,8 @@ SOURCES += \
     maxpoolinglayer.cpp \
     chnetwork.cpp \
     filemanager.cpp \
-    resultviewer.cpp
+    resultviewer.cpp \
+    resultchecker.cpp
 
 HEADERS += \
     heron.h \
@@ -44,7 +45,8 @@ HEADERS += \
     maxpoolinglayer.h \
     chnetwork.h \
     filemanager.h \
-    resultviewer.h
+    resultviewer.h \
+    resultchecker.h
 
 
 

@@ -10,4 +10,6 @@ INPUT(
 ./debug\chnetwork.o
 ./debug\filemanager.o
 ./debug\resultviewer.o
+./debug\resultchecker.o
+./debug\moc_resultchecker.o
 );

@@ -19,6 +19,8 @@ public:
     //QMap<int,ImageNumConvolutionSelection> mData;
     NumberRecognizer(QString data, int imageWidth, int imageHeight, QString convData = "null", QString heronsData = "null");
     QList<double> recognize(QImage image);
+    QList<double> recognize(QList<QList<double> > inputs);
+
     void learningPass(double learningSpeed, double learningMoment);
     CHNetwork * getHerons(){
         return &_herons;

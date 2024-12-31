@@ -11,35 +11,41 @@
 #include "chnetwork.h"
 #include "resultviewer.h"
 #include "filemanager.h"
+#include "resultchecker.h"
 int main(int argc, char *argv[])
 {
 
     qDebug() << "the start";
    QApplication a(argc, argv);
-    ResultViewer viewer;
-    viewer.mWidget->show();
-    QList<QImage> images;
-    for (int i = 0; i< 10; i++) {
-        images.append(QImage("data\\nums\\test\\Calibri_"+QString::number(i)+".bmp"));
-        if (images.last().isNull()){
-            qDebug() << "error" <<"data\\nums\\test\\Calibri_"+QString::number(i)+".png" ;
-            return 1;
-        }
-    }
+//    ResultViewer viewer;
+//    viewer.mWidget->show();
+//    QList<QImage> images;
+//    for (int i = 0; i< 10; i++) {
+//        images.append(QImage("data\\nums\\test\\test_"+QString::number(i)+".bmp"));
+//        if (images.last().isNull()){
+//            qDebug() << "error" <<"data\\nums\\test\\Calibri_"+QString::number(i)+".png" ;
+//            return 1;
+//        }
+//    }
 
-    NumberRecognizer network =NumberRecognizer (QString("data\\nums\\64"), 8,8, "data\\convData.txt", "data\\heronFieldData.txt");
-    for (int i = 0; i < 10000; i++){
-        a.processEvents();
-            for (int l = 0; l < 10; l++){
-                viewer.upDateRow(network.recognize(images[l]),l);
-            }
-            viewer.upDate(i);
-        network.learningPass(0.01,0);
-        if (i%20 == 0){
-            network.save();
-        }
-    }
-    network.save();
+//    NumberRecognizer network =NumberRecognizer (QString("data\\nums\\64"), 8,8, "data\\convData.txt", "data\\heronFieldData.txt");
+//    for (int i = 0; i < 10000; i++){
+//        a.processEvents();
+//            for (int l = 0; l < 10; l++){
+//                viewer.upDateRow(network.recognize(images[l]),l);
+//            }
+//            viewer.upDate(i);
+//        network.learningPass(0.01,0);
+//        if (i%20 == 0){
+//            network.save();
+//        }
+//    }
+//    network.save();
+
+   //qDebug() <<
+   //ImageDecorder dec;
+  // qDebug << dec.decodeToMatrix(QImage("data\\nums\\test\\test_0"));
+   ResultChecker checker(new NumberRecognizer (QString("data\\nums\\64"), 8,8, "data\\convData.txt", "data\\heronFieldData.txt"));
     qDebug()<<"the end";
 //       QList<QString> data;
 //       data.append("Layer{");
