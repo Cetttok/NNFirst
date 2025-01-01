@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 {
 
     qDebug() << "the start";
-   QApplication a(argc, argv);
+  QApplication a(argc, argv);
 //    ResultViewer viewer;
 //    viewer.mWidget->show();
 //    QList<QImage> images;
@@ -42,9 +42,6 @@ int main(int argc, char *argv[])
 //    }
 //    network.save();
 
-   //qDebug() <<
-   //ImageDecorder dec;
-  // qDebug << dec.decodeToMatrix(QImage("data\\nums\\test\\test_0"));
    ResultChecker checker(new NumberRecognizer (QString("data\\nums\\64"), 8,8, "data\\convData.txt", "data\\heronFieldData.txt"));
     qDebug()<<"the end";
 //       QList<QString> data;

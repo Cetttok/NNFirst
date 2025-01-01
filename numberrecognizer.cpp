@@ -38,7 +38,7 @@ NumberRecognizer::NumberRecognizer(QString data, int imageWidth, int imageHeight
        //qDebug() << _decoder.decodeToMatrix(QImage(data+"\\"+fileName));
     }
     qDebug() << "NumberRecognizer(...): mData init succsesfull!!! Count images/resoures =" << mData.size();
-    // qDebug () << "NumberRecognizer: herons on layers -"<<_herons.mHerons[0].size() <<_herons.mHerons[1].size()<< _herons.mHerons[2].size();
+    //qDebug () << "NumberRecognizer: herons on layers -"<<_herons.mHerons[0].size() <<_herons.mHerons[1].size()<< _herons.mHerons[2].size();
     _herons = *mFileManager->initNetworkFromFiles(imageWidth, imageHeight);
 }
 
