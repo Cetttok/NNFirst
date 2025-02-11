@@ -2,7 +2,7 @@
 #include <QDir>
 
 //#include "imagedecorder.h"
-#include <qDebug>
+#include <QDebug>
 NumberRecognizer::NumberRecognizer(QString data, int imageWidth, int imageHeight , QString convData, QString heronsData)
     :/*IMAGE_HEIGHT(imageHeight),IMAGE_WIDTH(imageWidth),*/_herons(CHNetwork(imageWidth,imageHeight))
 //

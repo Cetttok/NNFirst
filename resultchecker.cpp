@@ -1,5 +1,5 @@
 #include "resultchecker.h"
-#include <qDebug>
+#include <QDebug>
 #include <qevent.h>
 #include <qpainter.h>
 

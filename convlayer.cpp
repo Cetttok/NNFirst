@@ -1,6 +1,6 @@
 #include "convlayer.h"
 #include <QRandomGenerator>
-#include <qDebug>
+#include <QDebug>
 ConvLayer::ConvLayer(TensorSize inputSize,TensorSize outputSize,int filterSize, int filterCount):
     mInputSize(inputSize),
     mOutputSize(outputSize),

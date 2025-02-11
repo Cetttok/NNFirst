@@ -1,6 +1,6 @@
 #include <QCoreApplication>
 #include "heron.h"
-#include <qDebug>
+#include <QDebug>
 #include "heronfield.h"
 #include <QDateTime>
 #include "numberrecognizer.h"

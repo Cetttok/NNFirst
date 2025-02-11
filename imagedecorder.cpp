@@ -1,5 +1,5 @@
 #include "imagedecorder.h"
-#include <qDebug>
+#include <QDebug>
 ImageDecorder::ImageDecorder()
 {
     qDebug() << "IMAGE DECODER HAS BEEN CREATED!";

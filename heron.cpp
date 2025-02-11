@@ -1,5 +1,5 @@
 #include "heron.h"
-#include <qDebug>
+#include <QDebug>
 
 Heron::Heron(int idLayer, int id, double bias):mIdLayer(idLayer),mId(id),mBias(bias)
 {

@@ -4,7 +4,7 @@
 #include <QList>
 #include "chnetwork.h"
 #include "heronfield.h"
-
+#include <QFile>
 class FileManager{
 public:
     FileManager(QString convData, QString heronsData);

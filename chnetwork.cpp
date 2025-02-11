@@ -1,5 +1,5 @@
 #include "chnetwork.h"
-#include <qDebug>
+#include <QDebug>
 CHNetwork::CHNetwork(int width, int height)//:/*IMAGE_HEIGHT(height),IMAGE_WIDTH(width)*/
 {
 //    _layers.append(new ConvLayer(TensorSize(IMAGE_WIDTH,IMAGE_WIDTH,1),

@@ -1,5 +1,5 @@
 #include "heronfield.h"
-#include <qDebug>
+#include <QDebug>
 #include <QRandomGenerator>
 #include <QtMath>
 
