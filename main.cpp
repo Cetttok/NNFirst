@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 //    }
 //    network.save();
 
-   ResultChecker checker(new NumberRecognizer (QString("data\\nums\\64"), 8,8, "data\\convData.txt", "data\\heronFieldData.txt"));
+   ResultChecker checker(new NumberRecognizer (QString("data//nums//64"), 8,8, "data//convData.txt", "data//heronFieldData.txt"));
     qDebug()<<"the end";
 //       QList<QString> data;
 //       data.append("Layer{");

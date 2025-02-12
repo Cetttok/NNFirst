@@ -8,9 +8,9 @@ NumberRecognizer::NumberRecognizer(QString data, int imageWidth, int imageHeight
 //
     //QList<int>({imageHeight*imageWidth,imageHeight*imageWidth*2,1
 {
-    for(int i = 0; i< 10; i++){
-        qDebug() << _decoder.decodeToMatrix(QImage("data\\nums\\test\\test_"+QString::number(i)+".bmp"));
-    }
+//    for(int i = 0; i< 10; i++){
+//        qDebug() << _decoder.decodeToMatrix(QImage("data\\nums\\test\\test_"+QString::number(i)+".bmp"));
+//    }
 
     mFileManager = new FileManager(convData, heronsData);
     //mFileManager->saveHeronFieldToFile(_herons.getLastLayer());
