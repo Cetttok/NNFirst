@@ -25,8 +25,9 @@ public:
     CHNetwork * getHerons(){
         return &_herons;
     }
+    double getErrorForTrainning();
     FileManager *mFileManager = nullptr;
-
+    void clear();
     //void upDateAndConstructFromFile();
     void save();
 protected:
@@ -37,6 +38,8 @@ protected:
 
     //QList<double> getCorrectQListOutput(int correctNum);
     QList<double> getCorrectQListOutput(int correctNum, int classes = 10);
+private:
+    int getMaxIdFormList(QList<double> &list);
 };
 QDebug operator<<(QDebug debug, const QList<QList<double>> &image);
 class ImageNumSelection{

@@ -1,8 +1,10 @@
 #include "resultviewer.h"
 #include <QGridLayout>
 #include <QDebug>
+//#include <qlabel.h>
 Widget::Widget():QWidget()
 {
+
     mIterationCount = new QLineEdit("0 iteratoin",this);
     mIterationCount->setReadOnly(true);
 
@@ -119,46 +121,46 @@ ResultViewer::ResultViewer()
 {
     qDebug() << "created!";
     mWidget = new Widget();
-    initData(10,10);
-    initData(10,10);
-    mWidget->update();
-
+    //initData(10,10);
+    //initData(10,10);
+    //mWidget->update();
 }
-void ResultViewer::upDateData(QList<QList<double>> newData){
-    if(newData.size() != mWidget->row()){
-        qDebug() << "ResultViewer::upDateData(...): Error! badRowsSize:"
-                 << newData.size() <<"!=" << mWidget->row();
-        return;
-    }
-    else{
-        if(newData.first().size()!= mWidget->column()-1){
-            qDebug()<< "ResultViewer::upDateData(...): Error! badColumnsSize: "
-                  <<newData.first().size() << "!=" << mWidget->column();
-            return;
-        }
-        else{
-            for(int r = 0; r < mWidget->row(); r++){
-                for(int c = 1; c < mWidget->column(); c++){
-                    mWidget->changeTextInInfo(QString::number(newData[r][c]),r,c);
-                }
-            }
-        }
-    }
-}
+//}
+//void ResultViewer::upDateData(QList<QList<double>> newData){
+//    if(newData.size() != mWidget->row()){
+//        qDebug() << "ResultViewer::upDateData(...): Error! badRowsSize:"
+//                 << newData.size() <<"!=" << mWidget->row();
+//        return;
+//    }
+//    else{
+//        if(newData.first().size()!= mWidget->column()-1){
+//            qDebug()<< "ResultViewer::upDateData(...): Error! badColumnsSize: "
+//                  <<newData.first().size() << "!=" << mWidget->column();
+//            return;
+//        }
+//        else{
+//            for(int r = 0; r < mWidget->row(); r++){
+//                for(int c = 1; c < mWidget->column(); c++){
+//                    mWidget->changeTextInInfo(QString::number(newData[r][c]),r,c);
+//                }
+//            }
+//        }
+//    }
+//}
 
-void ResultViewer::initData(int classes, int containers){
-    for (int c =0; c < containers; c++) {
-        mWidget->mData.append(QList<QLineEdit*>());
-        for (int i = 0; i < classes+1; i++){
-            if (i == 0){
-                mWidget->mData[c].append(new QLineEdit(QString::number(c)));
-            }
-            else{
-                mWidget->mData[c].append(new QLineEdit(QString("udefinded")));
-            }
-            mWidget->insertTextEdit(mWidget->mData[c][i  ], c, i);
+//void ResultViewer::initData(int classes, int containers){
+//    for (int c =0; c < containers; c++) {
+//        mWidget->mData.append(QList<QLineEdit*>());
+//        for (int i = 0; i < classes+1; i++){
+//            if (i == 0){
+//                mWidget->mData[c].append(new QLineEdit(QString::number(c)));
+//            }
+//            else{
+//                mWidget->mData[c].append(new QLineEdit(QString("udefinded")));
+//            }
+//            mWidget->insertTextEdit(mWidget->mData[c][i  ], c, i);
 
 
-        }
-    }
-}
+//        }
+//    }
+//}

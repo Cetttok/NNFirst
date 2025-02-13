@@ -1,10 +1,10 @@
 #include "filemanager.h"
 #include <QString>
 QRegExp FileManager::mTensorSizeExp(QString("[(][0-9]+,[0-9]+,[0-9]+\[)]"));
-QRegExp FileManager::mLayerExp(QString("(ConvLayer|MaxPool|Tensor)_size_[(][0-9]+,[0-9]+,[0-9]+[)]->[(][0-9]+,[0-9]+,[0-9]+[)]"));
+QRegExp FileManager::mLayerExp(QString("(ConvLayer|MaxPool|ActivationLayer|Tensor)_size_[(][0-9]+,[0-9]+,[0-9]+[)]->[(][0-9]+,[0-9]+,[0-9]+[)]"));
 QRegExp FileManager::mNetworkSizeExp(QString("Network:((ConvLayer|MaxPool)_size_[(][0-9]+,[0-9]+,[0-9]+[)]->[(][0-9]+,[0-9]+,[0-9]+[)];)+"));
 QRegExp FileManager::mHeronFieldSizeExp("HeronField_size[(]([0-9]+,)+[0-9]+[)];");
-QRegExp FileManager::mHeronDataExp("Heron\\([0-9]+_\\[((-?[0-9]+[.][0-9]*,)*(-?[0-9]+[.][0-9]*(e-?[0-9]+)?)?\\]_basis\\(-?[0-9]+(\\.[0-9]+)?(e-?[0-9]+)?)\\)\\);" /*+\?,?)+\]_basis[(][0-9]+([.][0-9])?+[)][)];"*/);
+QRegExp FileManager::mHeronDataExp("Heron\\([0-9]+_\\[((-?[0-9]+[.][0-9]*(e-?[0-9]+)?,)*(-?[0-9]+[.][0-9]*(e-?[0-9]+)?)?\\]_basis\\(-?[0-9]+(\\.[0-9]+)?(e-?[0-9]+)?)\\)\\);" /*+\?,?)+\]_basis[(][0-9]+([.][0-9])?+[)][)];"*/);
 FileManager::FileManager(QString convData, QString heronsData):mConvFile(convData), mHeronsFile(heronsData)
 {
     mConvData = readFile(mConvFile);
@@ -39,9 +39,13 @@ CHNetwork *FileManager::initNetworkFromFiles(int width, int height)
 {
 
     CHNetwork * result = new CHNetwork(width, height);
+
     result->reconstructWithLayersData(getLayersData());
+
     result->setFilters(getFilters());
+
     HeronField * herons = createNewHeronFieldFromData(mHeronsData);
+
     result->setLastFilter(herons);
     return result;
 
@@ -120,12 +124,14 @@ QList<int> FileManager::getHeronFieldSize(QString data){
 
 }
 QList<LayerData> FileManager::getLayersData(){
+    //mConvData = readFile(mConvFile);
     return *parseLayersSize(mConvData.takeFirst());
     //qDebug() << *_layersData;
 }
 
 QList<Tensor> FileManager::getFilters(){
     QList<Tensor> result = QList<Tensor> ();
+    //qDebug() << mConvData;
     for (int i = 0; i < mConvData.size(); i++){
         QList<QString> atFilter = QList<QString> ();
         if (mConvData[i].contains("ConvLayer_filters{")){
@@ -133,11 +139,14 @@ QList<Tensor> FileManager::getFilters(){
             while (!mConvData[i].contains("}") && i<mConvData.size()){
                 atFilter.append(mConvData[i]);
                 i++;
+                //qDebug() << mConvData[i];
             }
             atFilter.append(mConvData[i]);
+
             atFilter.removeLast();
             //TensorSize size = parseTensorSize(atFilter.takeFirst());
             //qDebug() << size;
+            //qDebug() << atFilter;
             result.append(parseTensor(atFilter,parseTensorSize(atFilter.takeFirst())));
         }
         else{
@@ -252,6 +261,9 @@ LayerData FileManager::parseLayerData(QString data){
         result.mType = LayerType::MXPOOL;
 
     }
+    else if (splited.first() == "ActivationLayer"){
+        result.mType = LayerType::ACTIV;
+    }
     else{
         qDebug() << "FileManager::parseLayerData(...): Error! invalid type.";
     }
@@ -276,43 +288,49 @@ void FileManager::saveNetworkToFile(CHNetwork *network)
     //qDebug() << "FileManager::readFile(...): FileOpened sucsessful, FileSize: " << file.size();
     QTextStream dataStream(&mConvFile);
     dataStream << "Network:";
-    for (int i =0; i < network->convLayers().size();i++){
+    for (int i =0; i < network->getLayers().size();i++){
 
-        dataStream << "ConvLayer_size_" << network->convLayers()[i]->getInputSize().exportToString() <<
+        dataStream << network->getLayers()[i]->getHeading();/*<< "ConvLayer_size_" << network->convLayers()[i]->getInputSize().exportToString() <<
                       "->" << network->convLayers()[i]->getOutputSize().exportToString() << ";";
+        if (i < network->maxPoolLayers().size())
         dataStream << "MaxPool_size_" << network->maxPoolLayers()[i]->getInputSize().exportToString() <<
-                      "->" << network->maxPoolLayers()[i]->getOutputSize().exportToString() << ";";
+                      "->" << network->maxPoolLayers()[i]->getOutputSize().exportToString() << ";";*/
 
     }
 
     dataStream << endl;
 
-    for (int i = 0; i < network->convLayers().size(); i++){
-//        LayerData data = getLayersData()[i];
+    for (int i = 0; i < network->getLayers().size(); i++){
+        if (network->getLayers()[i]->isNeedSaving()){
+            network->getLayers()[i]->save(dataStream);
+        }
+        //qDebug() << "atLayer" << network->convLayers().size();
+        //        LayerData data = getLayersData()[i];
 //        if (data.mType == LayerType::CONV){
-            dataStream << "ConvLayer_filters{" << endl;
-            Tensor filter = network->convLayers()[i]->getFilters();
-            dataStream<< "Tensor_size_(" << filter.mSize.width<<","<< filter.mSize.height<<","<< filter.mSize.depth << ");" <<endl;
 
-            for (int d = 0; d < filter.mSize.depth; d++){
-                for (int y = 0; y < filter.mSize.height; y ++){
-                    for (int x = 0; x < filter.mSize.width; x++){
-                        dataStream << filter.get(x,y,d,"saveNetwork");
-                        if (x +1< filter.mSize.width){
-                            dataStream << "_";
-                        }
-                    }
-                    dataStream << endl;
-                }
-                if (d+1 < filter.mSize.depth){
-                    dataStream << "and" << endl;
-                }
+//            dataStream << "ConvLayer_filters{" << endl;
+//            Tensor filter = network->convLayers()[i]->getFilters();
+//            dataStream<< "Tensor_size_(" << filter.mSize.width<<","<< filter.mSize.height<<","<< filter.mSize.depth << ");" <<endl;
+
+//            for (int d = 0; d < filter.mSize.depth; d++){
+//                for (int y = 0; y < filter.mSize.height; y ++){
+//                    for (int x = 0; x < filter.mSize.width; x++){
+//                        dataStream << filter.get(x,y,d,"saveNetwork");
+//                        if (x +1< filter.mSize.width){
+//                            dataStream << "_";
+//                        }
+//                    }
+//                    dataStream << endl;
+//                }
+//                if (d+1 < filter.mSize.depth){
+//                    dataStream << "and" << endl;
+//                }
 
 
-            }
-            dataStream << "end" << endl <<"}";
+//            }
+//            dataStream << "end" << endl <<"}" <<endl;
             //qDebug() << getLayersData().size();
-            break;
+            //break;
         }
     //}
     mConvFile.close();

@@ -221,26 +221,28 @@ double HeronField::func(double input)
 //    if (input > 0){
 //          return input;
 //    }
-
+//    //return 0;
 //     return 0.001 * input;
-    return input/(1+fabs(input));
+  return input/(1+fabs(input));
+    //return qLn(1+qPow(e,input));
     //return input;
 }
 double HeronField::derFunc(double input){
     //relLU
 
-//    if (input > 1){
-//        return 0;
-//    }
-//    return 1;
+//  if (input > 0){
+//          return 1;
+//      }
+//    return 0;
 
 //    //sigmoid
 //    if (input > 0){
 //      return 1.0;}
 
 //     return 0.001;
-    return 1/((1+fabs(input))*(1+fabs(input)));
 
+    return 1/((1+fabs(input))*(1+fabs(input)));
+    //return 1/(1+qPow(e,-input));
     ////    //return cos(input);
     //return func(input)*(1.0-func(input));
 //    if (result!=result){

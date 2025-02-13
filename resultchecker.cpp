@@ -5,7 +5,7 @@
 
 QColor PixelFrame::mColoredPixelColor = Qt::black;
 QColor PixelFrame::mUnColoredPixelColor = Qt::white;
-
+QColor ResultChecker::mResultPersendTextColor = Qt::green;
 
 int ResultView::getMaxIdFormList(QList<double> &list){
     int max = 0;
@@ -16,16 +16,36 @@ int ResultView::getMaxIdFormList(QList<double> &list){
     }
     return max;
 }
-
+int ResultChecker::getMaxIdFromList(QList<double> &list){
+    int max = 0;
+    for (int i = 0; i < list.size(); i++){
+        if (list[i] > list[max]){
+            max = i;
+        }
+    }
+    return max;
+}
+double ResultChecker::getPersentForMaxId(QList<double> &data){
+    double sum  = 0;
+    for (double element : data){
+//        if (element <= 0){
+//            continue;
+//        }
+//        else{
+            sum+=fabs(element);
+        //}
+    }
+    return (fabs(data[getMaxIdFromList(data)])/sum)*100.0;
+}
 ResultChecker::ResultChecker(NumberRecognizer *network):QWidget()
 {
     _network = network;
     resize(800,600);
-    _pixelFrame = new PixelFrame(this,8,8);
+    _pixelFrame = new PixelFrame(this,network->getHerons()->getLayers().first()->getInputSize().width,
+                                 network->getHerons()->getLayers().first()->getInputSize().height);
     _layout = new QHBoxLayout();
     _layout->addWidget(_pixelFrame);
-    _layout->setStretchFactor(_pixelFrame,5);
-
+    _layout->setStretchFactor(_pixelFrame,10);
     _toolPanel = new QWidget();
     _toolPanelLayout = new QVBoxLayout();
 
@@ -36,10 +56,19 @@ ResultChecker::ResultChecker(NumberRecognizer *network):QWidget()
     _toolPanelLayout->addWidget(_calculateButton);
     _result = new ResultView(10);
 
+//    _resultPersent = new QTextEdit("Udefinded");
+//    _resultPersent->setReadOnly(true);
+//    _resultPersent->setTextColor(mResultPersendTextColor);
+//    _resultPersent->setFont(QFont("Arial Black", 13));
+
     _toolPanelLayout->addWidget(_result);
+    //_toolPanelLayout->addWidget(_resultPersent);
     _toolPanel->setLayout(_toolPanelLayout);
 
+
     _layout->addWidget(_toolPanel);
+    _layout->setStretchFactor(_toolPanel,2);
+    //_layout->addWidget(_resultPersent);
     setLayout(_layout);
     _pixelFrame->setFocus();
     show();
@@ -49,9 +78,16 @@ void ResultChecker::paintEvent(QPaintEvent *event)
 {
 }
 
+NumberRecognizer *ResultChecker::network() const
+{
+    return _network;
+}
+
 void ResultChecker::onCalculateButton()
 {
-    _result->upDateResult(_network->recognize(_pixelFrame->getMatrix()));
+    QList<double> result = _network->recognize(_pixelFrame->getMatrix());
+    _result->upDateResult(result);
+//    _resultPersent->setText(QString::number(getMaxIdFromList(result))+ " "  + QString::number(getPersentForMaxId(result))+ "%");
 }
 
 void PixelFrame::paintEvent(QPaintEvent *event)

@@ -1,26 +1,36 @@
 #ifndef CONVLAYER_H
 #define CONVLAYER_H
 #include "tensor.h"
-
-class ConvLayer : public Forwarded
+#include "baselayer.h"
+class ConvLayer : public BaseLayer
 {
 public:
-    ConvLayer(TensorSize inputSize, TensorSize outputSize, int filterSize, int filterCount);
+    ConvLayer(TensorSize inputSize, TensorSize outputSize, int filterSize, int filterCount, int id);
+    int getId();
+    bool isNeedSaving();
+    TensorSize getInputSize();
+    TensorSize getOutputSize();
+    QString getHeading();
+    void save(QTextStream &dataStream);
+    bool upDateCore(Tensor core);
+    Tensor forward(Tensor &input);
+    Tensor backward(Tensor &input);
+    void debug(QDebug &debug);
 
-    Tensor forward(Tensor &inputTensor);
+
+//    Tensor forward(Tensor &inputTensor);
+//    TensorSize getOutputSize();
+//    TensorSize getInputSize();
+//    Tensor getFilters();
+//    void upDateCore(Tensor newCore);
+private:
+    int _id;
     TensorSize mInputSize;
-    void updateWeightsOfFilters(double learningSpeed);
     TensorSize mOutputSize;
     Tensor backward(Tensor &inputDeltas, double learningSpeed);
-
-    TensorSize getOutputSize();
-    TensorSize getInputSize();
-    void debug(QDebug &debug);
-    Tensor getFilters();
-    void upDateCore(Tensor newCore);
-    Tensor * _filtersGradients = nullptr;
     Tensor _filter;
-private:
+    Tensor * _filtersGradients = nullptr;
+    void updateWeightsOfFilters(double learningSpeed);
     Tensor * _lastInputTensor = nullptr;
 
     double pairedMultyply(QList<QList<double> > &a, QList<QList<double> > &b);

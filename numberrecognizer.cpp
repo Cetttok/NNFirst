@@ -4,12 +4,14 @@
 //#include "imagedecorder.h"
 #include <QDebug>
 NumberRecognizer::NumberRecognizer(QString data, int imageWidth, int imageHeight , QString convData, QString heronsData)
+
     :/*IMAGE_HEIGHT(imageHeight),IMAGE_WIDTH(imageWidth),*/_herons(CHNetwork(imageWidth,imageHeight))
 //
     //QList<int>({imageHeight*imageWidth,imageHeight*imageWidth*2,1
 {
+//    qDebug() << "12121";
 //    for(int i = 0; i< 10; i++){
-//        qDebug() << _decoder.decodeToMatrix(QImage("data\\nums\\test\\test_"+QString::number(i)+".bmp"));
+//        //qDebug() << _decoder.decodeToMatrix(QImage("data\\nums\\test\\test_"+QString::number(i)+".png"));
 //    }
 
     mFileManager = new FileManager(convData, heronsData);
@@ -17,7 +19,10 @@ NumberRecognizer::NumberRecognizer(QString data, int imageWidth, int imageHeight
     //mFileManager->saveNetworkToFile(&_herons);
     QDir dir(data);
    // qDebug() << data << dir.entryList();
+    //qDebug() <<dir.entryList() << "121";
     QStringList filesOndata=dir.entryList();
+
+
 
     filesOndata.removeFirst();
     filesOndata.removeFirst();
@@ -29,8 +34,9 @@ NumberRecognizer::NumberRecognizer(QString data, int imageWidth, int imageHeight
     for (QString& fileName : filesOndata ){
        //qDebug() << "NumberRecognizer: insert new learning element" <<  ((double)fileName.at(fileName.size()-5).unicode()-48)/10<< fileName;
        mData.insert(mData.size(),
-                       ImageNumSelection(_decoder.decodeToMatrix(QImage(data+"\\"+fileName)),
+                       ImageNumSelection(_decoder.decodeToMatrix(QImage(data+"//"+fileName)),
                                                       getCorrectQListOutput(((double)fileName.at(fileName.size()-5).unicode()-48))));
+       qDebug() << fileName << " at " << getCorrectQListOutput(((double)fileName.at(fileName.size()-5).unicode()-48));
 //       mData.insert(mData.size(),
 //                            ImageNumSelection(_decoder.decodeToMatrix(QImage(data+"\\"+fileName)),
 //                                                           getCorrectQListOutput(((double)fileName.at(0).unicode()-48))));
@@ -41,7 +47,15 @@ NumberRecognizer::NumberRecognizer(QString data, int imageWidth, int imageHeight
     //qDebug () << "NumberRecognizer: herons on layers -"<<_herons.mHerons[0].size() <<_herons.mHerons[1].size()<< _herons.mHerons[2].size();
     _herons = *mFileManager->initNetworkFromFiles(imageWidth, imageHeight);
 }
-
+int NumberRecognizer::getMaxIdFormList(QList<double> &list){
+    int max = 0;
+    for (int i = 0; i < list.size(); i++){
+        if (list[i] > list[max]){
+            max = i;
+        }
+    }
+    return max;
+}
 QList<double> NumberRecognizer::getCorrectQListOutput(int correctNum, int classes){
     QList<double> list = QList<double> ();
     for (int i = 0; i < classes; i++){
@@ -66,6 +80,26 @@ void NumberRecognizer::learningPass(double learningSpeed, double learningMoment)
         _herons.learningStep(mData.find(imageId)->mNum,learningSpeed);
     }
     //qDebug() << "NumberRecognizer: learning pass completed!" <<mData.size();
+}
+
+double NumberRecognizer::getErrorForTrainning()
+{
+    if (mData.size() == 0){
+        return 0;
+    }
+    int errors = 0;
+    for (int i = 0; i < mData.size(); i++){
+        QList<double> output = _herons.calculateOutput(mData.find(i)->mPixels);
+        if (getMaxIdFormList(output) != getMaxIdFormList(mData.find(i)->mNum)){
+            errors++;
+        }
+    }
+    return (double)errors/(double)mData.size();
+}
+
+void NumberRecognizer::clear()
+{
+    _herons.reconstructWithLayersData(mFileManager->getLayersData());
 }
 
 void NumberRecognizer::save()

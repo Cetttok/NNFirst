@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QTextEdit>
 #include <QWidget>
+#include <qlabel.h>
 class Widget : public QWidget
 {
 public:
@@ -37,10 +38,9 @@ class ResultViewer
 public:
     ResultViewer();
     Widget * mWidget =nullptr;
-    //QList<QList<double>> values;
-    //void addValue(QList<double> &value);
-    //QWidget*  mWidget;
-    //QTextEdit *mIterationCountText;
+    QList<QList<double>> values;
+    void addValue(QList<double> &value);
+    QTextEdit *mIterationCountText;
 
     void initData(int classes, int containers);
     void upDateData(QList<QList<double> > newData);

@@ -2,14 +2,16 @@
 #define FILEMANAGER_H
 #include <QTextStream>
 #include <QList>
+#include <QFile>>
 #include "chnetwork.h"
 #include "heronfield.h"
-#include <QFile>
+
 class FileManager{
 public:
     FileManager(QString convData, QString heronsData);
     CHNetwork * initNetworkFromFiles(int width, int height);
     void saveNetworkToFile(CHNetwork * network);
+    QList<LayerData> getLayersData();
 
 protected:
     static QRegExp mTensorSizeExp;
@@ -17,6 +19,7 @@ protected:
     static QRegExp mNetworkSizeExp;
     static QRegExp mHeronFieldSizeExp;
     static QRegExp mHeronDataExp;
+    static QRegExp mLayerIdExp;
 
     QFile mConvFile;
     QList <QString> mConvData;
@@ -43,9 +46,9 @@ protected:
     QList<LayerData> *parseLayersSize(QString data);
     Tensor parseTensor(QList<QString> list, TensorSize size);
     QList<Tensor> getFilters();
-    QList<LayerData> getLayersData();
     //parseTensorSize(QString data);
     //HeronField *createHeronFieldFromFile();
+    int parseLayerId(QString data);
 };
 
 

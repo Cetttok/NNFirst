@@ -1,14 +1,37 @@
 #include "maxpoolinglayer.h"
 
-MaxPoolingLayer::MaxPoolingLayer(TensorSize size, int scale):_maskOfMaximums(size)
+MaxPoolingLayer::MaxPoolingLayer(TensorSize size, int scale, int id):_maskOfMaximums(size), _id(id)
 {
     _scale = scale;
     mInputSize = size;
     mOutputSize = TensorSize(size.width/scale, size.height/scale,size.depth);
 
 }
+
+int MaxPoolingLayer::getId()
+{
+    return _id;
+}
 TensorSize MaxPoolingLayer::getOutputSize(){
     return mOutputSize;
+}
+
+QString MaxPoolingLayer::getHeading()
+{
+    return QString ("MaxPool_size_" + getInputSize().exportToString() +
+                    "->" + getOutputSize().exportToString() +";");
+}
+
+void MaxPoolingLayer::save(QTextStream &dataStream)
+{
+    //return false;
+    qDebug() << "MaxPoolingLayer::save(...): Warning! You can't save MaxPool layer.";
+}
+
+bool MaxPoolingLayer::upDateCore(Tensor core)
+{
+    qDebug() << "MaxPoolingLayer::upDateCore(...): Warning! You cant't upDateCore on maxpool layer.";
+    return false;
 }
 
 TensorSize MaxPoolingLayer::getInputSize()
@@ -34,6 +57,11 @@ Tensor MaxPoolingLayer::backward(Tensor &inputErrors, double learningSpeed){
     }
     //qDebug() << "Tensor MaxPoolingLayer::backward(...) completed succesfull!";
     return result;
+}
+
+bool MaxPoolingLayer::isNeedSaving()
+{
+    return false;
 }
 Tensor MaxPoolingLayer::forward(Tensor &inputTensor)
 {

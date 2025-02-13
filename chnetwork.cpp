@@ -1,3 +1,4 @@
+#include "activationlayer.h"
 #include "chnetwork.h"
 #include <QDebug>
 CHNetwork::CHNetwork(int width, int height)//:/*IMAGE_HEIGHT(height),IMAGE_WIDTH(width)*/
@@ -22,13 +23,29 @@ CHNetwork::CHNetwork(int width, int height)//:/*IMAGE_HEIGHT(height),IMAGE_WIDTH
 
 //    }
 
-    _convLayers.append(new ConvLayer(TensorSize(8,8,1),
-                             TensorSize(6,6,4),3,4));
-    _maxPoolLayers.append(new MaxPoolingLayer(TensorSize(6,6,4)));
+    //layers.append(new MaxPoolingLayer(TensorSize(8,8,1), 2, 0));
+    //_layers.append(new ConvLayer(TensorSize(4,4,1), TensorSize(2,2,8), 3, 8,1));
+    //_layers.append(new ConvLayer(TensorSize(8,8,1),
+    //                         TensorSize(6,6,4),3,4, _layers.size()));
+   // _layers.append(new ActivationLayer(TensorSize(6,6,4),_layers.size()));
+    // _layers.append(new ConvLayer(TensorSize(6,6,4),TensorSize(4,4,8),3,2,_layers.size()));
+    //_layers.append(new MaxPoolingLayer(TensorSize(6,6,4),2,_layers.size()));
+    //_layers.append(new MaxPoolingLayer(TensorSize(4,4,8),2,_layers.size()));
 
-    int baseSize = updateLastMatrixLayer();
+//    _layers.append(new ConvLayer(TensorSize(28,28,1),TensorSize(22,22,4),7,4,0));
+//    _layers.append(new MaxPoolingLayer(TensorSize(22,22,4), 2,1));
+//    _layers.append(new ConvLayer(TensorSize(11,11,4), TensorSize(7,7,16), 5,4,2));
+//    _layers.append(new ConvLayer(TensorSize(7,7,16), TensorSize(1,1,64),7,4,3));
 
-    _lastLayer = HeronField(QList<int>({baseSize,baseSize*0.5,10}));
+    //1 config
+    _layers.append(new MaxPoolingLayer(TensorSize(28,28,1),2,0));
+    _layers.append(new ConvLayer(TensorSize(14,14,1), TensorSize(12,12,4),3,4,1));
+    _layers.append(new MaxPoolingLayer(TensorSize(12,12,4),2,3));
+    _layers.append(new ConvLayer(TensorSize(6,6,4),TensorSize(4,4,8),3,2,4));
+////
+    int baseSize = getBaseSize();
+
+    _lastLayer = HeronField(QList<int>({baseSize,int(baseSize*0.5),10}));
     qDebug() << "CHNetwork::CHNetwork(...) Created! Size: ";
     //for (Forwarded *layer : _layers){
 //        qDebug() << "Layer: size(" << layer->getOutputSize().width<<"*" << layer->getOutputSize().height <<
@@ -40,24 +57,26 @@ CHNetwork::CHNetwork(int width, int height)//:/*IMAGE_HEIGHT(height),IMAGE_WIDTH
 //    }
 
 }
-int CHNetwork::updateLastMatrixLayer(){
-    if (_maxPoolLayers.size() >= _convLayers.size()){
-        _lastMatrixLayer = _maxPoolLayers.last();
-    }
-    else{
-        _lastMatrixLayer = _convLayers.last();
-    }
+int CHNetwork::getBaseSize(){
 
-    return _lastMatrixLayer->getOutputSize().width*
-                _lastMatrixLayer ->getOutputSize().height*
-                _lastMatrixLayer ->getOutputSize().depth;
+
+    return _layers.last()->getOutputSize().width*
+                _layers.last()->getOutputSize().height*
+                _layers.last()->getOutputSize().depth;
 
 
 }
 void CHNetwork::setFilters(QList<Tensor> filters){
     //qDebug() << data.size();
-    for (ConvLayer * layer : _convLayers){
-        layer->upDateCore(filters.takeFirst());
+
+    for (BaseLayer * layer : _layers){
+        if (layer->upDateCore(filters.first())){
+            filters.removeFirst();
+            if(filters.isEmpty()){
+                break;
+            }
+        }
+
     }
 }
 void CHNetwork::reconstructWithLayersData(QList<LayerData> data){
@@ -65,33 +84,41 @@ void CHNetwork::reconstructWithLayersData(QList<LayerData> data){
         qDebug() << "CHNetwork::reconstructWithLayersData(...): Bad Data because her size == 0";
         return;
     }
-    _convLayers.clear();
-    _maxPoolLayers.clear();
+    _layers.clear();
+    //_maxPoolLayers.clear();
     for (LayerData &layer: data){
         if (layer.mType == LayerType::CONV){
-            _convLayers.append(new ConvLayer(layer.mInputSize, layer.mOutputSize, 3,layer.mOutputSize.depth/layer.mInputSize.depth));
+            _layers.append(new ConvLayer(layer.mInputSize, layer.mOutputSize, layer.mInputSize.width - layer.mOutputSize.width + 1,layer.mOutputSize.depth/layer.mInputSize.depth , _layers.size()));
         }
         else if (layer.mType == LayerType::MXPOOL){
-            _maxPoolLayers.append(new MaxPoolingLayer(layer.mInputSize));
+            _layers.append(new MaxPoolingLayer(layer.mInputSize,2, _layers.size()));
+        }
+        else if (layer.mType == LayerType::ACTIV){
+            _layers.append(new ActivationLayer(layer.mInputSize,_layers.size()));
         }
 
     }
-    int baseSize = updateLastMatrixLayer();
-    _lastLayer = HeronField(QList<int>({baseSize,baseSize*0.5,10}));
+    int baseSize = getBaseSize();
+    _lastLayer = HeronField(QList<int>({baseSize,int(baseSize*0.5),10}));
 }
 QList<double> CHNetwork::calculateOutput(QList<QList<double> > inputMatrix)
 {
     //qDebug() << "double CHNetwork::calculateOutput(...): Starting calculating...";
 
-    Tensor input = Tensor(8, 8,1);
+    Tensor input = Tensor(_layers.first()->getInputSize());
     //qDebug() << input;
     input.setMatrix(0,inputMatrix);
     //qDebug() << input;
     Tensor  activeTensor = input;
 
-    for (int i = 0; i < _convLayers.size(); i++){
-        activeTensor = _convLayers[i]->forward(activeTensor);
-        activeTensor = _maxPoolLayers[i]->forward(activeTensor);
+    for (int i = 0; i < _layers.size(); i++){
+//        if (_convLayers.size() > i){
+//            activeTensor = _convLayers[i]->forward(activeTensor);
+//        }
+//        if (_maxPoolLayers.size() > i){
+//            activeTensor = _maxPoolLayers[i]->forward(activeTensor);
+//        }
+        activeTensor = _layers[i]->forward(activeTensor);
         //qDebug() << "double CHNetwork::calculateOutput(...): layer has been calculated!";
     }
     //qDebug() << "double CHNetwork::calculateOutput(...): Nice! All tensors has been caluclulated!";
@@ -103,15 +130,14 @@ QList<double> CHNetwork::calculateOutput(QList<QList<double> > inputMatrix)
 
 }
 void CHNetwork::learningStep(QList<double> correctOutput, double learningSpeed){
-    if (_maxPoolLayers.size() >= _convLayers.size()){
+//    if (_maxPoolLayers.size() >= _convLayers.size()){
 
-    }
-    Tensor inputs = fromQListToTensor(_lastLayer.makeLearningStep(correctOutput,learningSpeed,learningSpeed*0.5), _lastMatrixLayer->getOutputSize());
+//    }
+    Tensor inputs = fromQListToTensor(_lastLayer.makeLearningStep(correctOutput,learningSpeed,learningSpeed*1.5), _layers.last()->getOutputSize());
     //qDebug() << "void CHNetwork::learningStep(...): last layer bakcwareded and changed weights";
     //qDebug() <<inputs;
-    for (int layer = _maxPoolLayers.size()-1; layer >=0; layer --){
-        inputs = _maxPoolLayers[layer]->backward(inputs, learningSpeed);
-        inputs = _convLayers[layer]->backward(inputs, learningSpeed);
+    for (int layer = _layers.size()-1; layer >=0; layer --){
+        inputs = _layers[layer]->backward(inputs, learningSpeed);
         //qDebug() << inputs;
     }
     //qDebug() << "void CHNetwork::learningStep(...): learning StepMaked";
@@ -153,15 +179,20 @@ Tensor CHNetwork::fromQListToTensor(QList<double> list, TensorSize size){
     return result;
 }
 
-QList<MaxPoolingLayer *> CHNetwork::maxPoolLayers() const
+QList<BaseLayer *> CHNetwork::getLayers() const
 {
-    return _maxPoolLayers;
+    return _layers;
 }
 
-QList<ConvLayer *> CHNetwork::convLayers() const
-{
-    return _convLayers;
-}
+//QList<MaxPoolingLayer *> CHNetwork::maxPoolLayers() const
+//{
+//    return _maxPoolLayers;
+//}
+
+//QList<ConvLayer *> CHNetwork::convLayers() const
+//{
+//    return _convLayers;
+//}
 
 HeronField *CHNetwork::getLastLayer()
 {

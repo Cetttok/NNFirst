@@ -1,7 +1,8 @@
 #include "convlayer.h"
 #include <QRandomGenerator>
 #include <QDebug>
-ConvLayer::ConvLayer(TensorSize inputSize,TensorSize outputSize,int filterSize, int filterCount):
+ConvLayer::ConvLayer(TensorSize inputSize,TensorSize outputSize,int filterSize, int filterCount, int id):
+    _id(id),
     mInputSize(inputSize),
     mOutputSize(outputSize),
     _filter(Tensor(filterSize,filterSize,filterCount))
@@ -32,8 +33,54 @@ ConvLayer::ConvLayer(TensorSize inputSize,TensorSize outputSize,int filterSize, 
 
 
 }
+
+int ConvLayer::getId()
+{
+    return _id;
+}
+
+bool ConvLayer::isNeedSaving()
+{
+    return true;
+}
 TensorSize ConvLayer::getOutputSize(){
     return mOutputSize;
+}
+
+QString ConvLayer::getHeading()
+{
+    return QString ("ConvLayer_size_" + getInputSize().exportToString() +
+                          "->" + getOutputSize().exportToString() + ";");
+}
+
+void ConvLayer::save(QTextStream &dataStream)
+{
+//    dataStream << "Layer[" << _id << "]" << endl;
+//    dataStream <<"layer_start"<<endl;
+    dataStream<<"ConvLayer_filters{" << endl;
+
+    //Tensor filter = network->convLayers()[i]->getFilters();
+    dataStream<< "Tensor_size_(" << _filter.mSize.width<<","<< _filter.mSize.height<<","<< _filter.mSize.depth << ");" <<endl;
+
+    for (int d = 0; d < _filter.mSize.depth; d++){
+        for (int y = 0; y < _filter.mSize.height; y ++){
+            for (int x = 0; x < _filter.mSize.width; x++){
+                dataStream << _filter.get(x,y,d,"saveNetwork");
+                if (x +1< _filter.mSize.width){
+                    dataStream << "_";
+                }
+            }
+            dataStream << endl;
+        }
+        if (d+1 < _filter.mSize.depth){
+            dataStream << "and" << endl;
+        }
+
+
+    }
+    dataStream << "end" << endl <<"}" <<endl;
+//    dataStream<<"layer_end" << endl;
+
 }
 
 TensorSize ConvLayer::getInputSize()
@@ -48,17 +95,19 @@ void ConvLayer::debug(QDebug &debug)
     debug << _filter;
 }
 
-Tensor ConvLayer::getFilters()
-{
-    return _filter;
-}
+//Tensor ConvLayer::getFilters()
+//{
+//    return _filter;
+//}
 
-void ConvLayer::upDateCore(Tensor newCore)
+bool ConvLayer::upDateCore(Tensor newCore)
 {
     if (_filter.mSize == newCore.mSize){
         _filter = newCore;
+        return true;
     }
     else{
+        return false;
         qDebug() << "ConvLayer::upDateCore(...): not Cation upDate/ bad filter(core)";
     }
 }
@@ -115,6 +164,7 @@ Tensor ConvLayer::forward(Tensor& inputTensor)
     delete _lastInputTensor;
     //qDebug() << inputTensor;
     _lastInputTensor = inputTensor.copy();
+    //qDebug() << _lastInputTensor->toQStringSize();
         //delete inputTensor;
         //qDebug() << "Tensor *ConvLayer::forward(...) input saved." << _lastInputTensor->toQStringSize();
 

@@ -7,7 +7,7 @@
 #include "heronfield.h"
 
 enum LayerType{
-    CONV,MXPOOL
+    CONV,MXPOOL,ACTIV
 };
 struct LayerData
 {
@@ -22,6 +22,7 @@ class CHNetwork
 public:
 //    const int IMAGE_WIDTH;
 //    const int IMAGE_HEIGHT;
+
     CHNetwork(int width, int height);
     QList<double> calculateOutput(QList<QList<double>> inputMatrix);
     //void makeLearningStep();
@@ -33,18 +34,22 @@ public:
     //void reconstructWhithLayersData(QList<LayerData> data);
     void reconstructWithLayersData(QList<LayerData> data);
     void setFilters(QList<Tensor> filters);
-    QList<ConvLayer *> convLayers() const;
+  //  QList<ConvLayer *> convLayers() const;
     HeronField* getLastLayer();
-    QList<MaxPoolingLayer *> maxPoolLayers() const;
+    //QList<MaxPoolingLayer *> maxPoolLayers() const;
+
+    int getBaseSize();
+    QList<BaseLayer *> getLayers() const;
 
 protected:
     Tensor fromQListToTensor(QList<double> list, TensorSize size);
 private:
     //ist<Forwarded*> _layers;
 
-    QList<ConvLayer*> _convLayers;
-    QList<MaxPoolingLayer*> _maxPoolLayers;
-    Forwarded *_lastMatrixLayer;
+
+    QList<BaseLayer*> _layers;
+
+//    Forwarded *_lastMatrixLayer;
 
     HeronField _lastLayer = HeronField(QList<int>({1,1}));
 
@@ -52,7 +57,7 @@ private:
     QList<double> tensorToQList(Tensor tensor);
 
 
-    int updateLastMatrixLayer();
+//    int updateLastMatrixLayer();
 };
 QDebug operator<<(QDebug debug, const CHNetwork &tensor);
 

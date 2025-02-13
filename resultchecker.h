@@ -2,11 +2,12 @@
 #define RESULTCHECKER_H
 #include "numberrecognizer.h"
 
-#include <QFrame>
+//#include <QFrame>
 #include <QWidget>
 #include <qboxlayout.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
+#include <qtextedit.h>
 class ResultView : public QWidget
 {
 public:
@@ -23,7 +24,7 @@ class Pixel : public QRect
 public:
     int mX;
     int mY;
-    bool isColored = true;
+    bool isColored = false;
     QRect mRect;
 
     Pixel(QRect rect, int x, int y);
@@ -66,15 +67,19 @@ public:
     ResultChecker(NumberRecognizer *network);
     void paintEvent(QPaintEvent *event);
 //    int getMaxIdFormList(QList<double> &list);
+    NumberRecognizer *network() const;
+    static QColor mResultPersendTextColor;
 protected:
     NumberRecognizer * _network;
     QHBoxLayout *_layout;
     PixelFrame * _pixelFrame;
-
+    //QTextEdit * _resultPersent;
     QPushButton *_calculateButton;
     QWidget *_toolPanel;
     QVBoxLayout *_toolPanelLayout;
     ResultView * _result;
+    int getMaxIdFromList(QList<double> &list);
+    double getPersentForMaxId(QList<double> &data);
 public slots:
     void onCalculateButton();
 
